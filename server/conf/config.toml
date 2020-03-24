@@ -1,0 +1,10 @@
+[base]
+Port=":8888"
+APPId=""
+APPSecret=""
+
+[mysql]
+DBHost="localhost:3306"
+DBUsername="root"
+DBPassword="root"
+DBName="Xray"
