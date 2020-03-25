@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
@@ -15,11 +15,13 @@ type Vul struct {
 	Payload  string `gorm:"size:999999"`
 	Request  string `gorm:"size:999999"`
 	Response string `gorm:"size:999999"`
+	Times    int64  `gorm:"size:100"`
 }
 
 type VulInfo struct {
-	Detail Detail `json:"detail"`
-	Plugin string `json:"plugin"`
+	Timestamp int64  `json:"create_time"`
+	Detail    Detail `json:"detail"`
+	Plugin    string `json:"plugin"`
 }
 
 type Detail struct {
@@ -32,6 +34,7 @@ type Detail struct {
 	Response string `json:"response"`
 }
 
+// 从客户端获取漏洞信息
 func (s *Service) getVulInfo(c *gin.Context) {
 	var formData VulInfo
 	err := c.BindJSON(&formData)
@@ -52,13 +55,26 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 		Payload:  data.Detail.Payload,
 		Request:  data.Detail.Request,
 		Response: data.Detail.Response,
+		Times:    data.Timestamp,
 	}
-	s.Mysql.Create(vulData)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	c.JSON(400, gin.H{"errcode": 401, "description": "数据库操作失败"})
-	//	return
-	//}
-	s.StartWeChat(data)
-	//defer s.Mysql.Close()
+	if !s.check(data) {
+		fmt.Printf("重复插入记录")
+	} else {
+		s.Mysql.Create(vulData)
+		s.StartWeChat(data)
+	}
+}
+
+// 检查该漏洞是否已记录
+func (s *Service) check(data VulInfo) bool {
+	a := s.Mysql.Model(&Pushed{}).Where(&Pushed{
+		Model:    gorm.Model{},
+		Request:  data.Detail.Request,
+		Response: data.Detail.Response,
+	}).First(&Pushed{}).RowsAffected
+	if a == 1 {
+		return false
+	} else {
+		return true
+	}
 }

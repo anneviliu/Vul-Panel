@@ -48,6 +48,11 @@ func (s *Service) StartWeChat(data VulInfo) {
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println("response Body:", string(body))
+	var r RetMsg
+	json.Unmarshal([]byte(string(body)), &r)
+	if r.ErrMsg == "ok" {
+		s.addPushed(data)
+	}
 
 }
 
@@ -91,6 +96,5 @@ func (s *Service) buildHtml(data VulInfo) []byte {
 	if err != nil {
 		log.Fatalln("read json err", err)
 	}
-	//fmt.Println(string(res))
 	return res
 }
