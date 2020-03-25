@@ -6,14 +6,13 @@ import (
 )
 
 type Config struct {
-	Mysql `toml:"mysql"`
-	Base  `toml:"base"`
+	Mysql  `toml:"mysql"`
+	Base   `toml:"base"`
+	WeChat `toml:"wechat"`
 }
 
 type Base struct {
-	Port      string
-	APPId     string
-	APPSecret string
+	Port string
 }
 
 type Mysql struct {
@@ -21,6 +20,15 @@ type Mysql struct {
 	DBUsername string
 	DBPassword string
 	DBName     string
+}
+
+type WeChat struct {
+	CorpID         string
+	CorpSecret     string
+	AccessTokenUrl string
+	AdminOpenID    string
+	SendMsgUrl     string
+	AgentID        int
 }
 
 func (s *Service) initConfig() {

@@ -1,9 +1,10 @@
 package main
 
 import (
+	//"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
-import "github.com/gin-gonic/gin"
 
 type Vul struct {
 	gorm.Model
@@ -11,7 +12,7 @@ type Vul struct {
 	Port     int
 	Url      string `gorm:"size:1000"`
 	Title    string
-	Payload  string `gorm:"size:9999"`
+	Payload  string `gorm:"size:999999"`
 	Request  string `gorm:"size:999999"`
 	Response string `gorm:"size:999999"`
 }
@@ -36,12 +37,13 @@ func (s *Service) getVulInfo(c *gin.Context) {
 	err := c.BindJSON(&formData)
 	if err != nil {
 		c.JSON(400, gin.H{"errcode": 400, "description": "Post Data Err"})
+		return
 	}
-	s.add(formData)
+	s.add(formData, c)
 }
 
 // 向数据库中插入漏洞信息
-func (s *Service) add(data VulInfo) {
+func (s *Service) add(data VulInfo, c *gin.Context) {
 	vulData := &Vul{
 		Host:     data.Detail.Host,
 		Port:     data.Detail.Port,
@@ -52,4 +54,11 @@ func (s *Service) add(data VulInfo) {
 		Response: data.Detail.Response,
 	}
 	s.Mysql.Create(vulData)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	c.JSON(400, gin.H{"errcode": 401, "description": "数据库操作失败"})
+	//	return
+	//}
+	s.StartWeChat(data)
+	//defer s.Mysql.Close()
 }
