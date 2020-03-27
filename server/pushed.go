@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"html"
 )
 
 type Pushed struct {
@@ -25,22 +26,22 @@ func (s *Service) addPushed(data VulInfo) {
 		Url:      data.Detail.Url,
 		Title:    data.Plugin,
 		Payload:  data.Detail.Payload,
-		Request:  data.Detail.Request,
-		Response: data.Detail.Response,
+		Request:  html.EscapeString(data.Detail.Request),
+		Response: html.EscapeString(data.Detail.Response),
 		Times:    data.Timestamp,
 	}
 	s.Mysql.Create(&pushed)
 }
 
+// 获取最后插入记录的时间戳
 func (s *Service) getLastTime(c *gin.Context) {
 	var time Pushed
-	//row := s.Mysql.Find(&Pushed{}).Row()
-	//fmt.Println(row)
 	err := s.Mysql.Where(&Pushed{}).Last(&time).Error
 	if err != nil {
 		c.JSON(200, gin.H{"code": 500, "msg": "数据库错误"})
 		return
 	}
+	// 获取时间戳
 	res := time.Times
 	c.JSON(200, gin.H{"code": 200, "msg": res})
 }

@@ -15,7 +15,11 @@ func (s *Service) initRouter() *gin.Engine {
 		s.getVulInfo(c)
 	})
 
-	r.POST("/getLastTime", func(c *gin.Context) {
+	r.POST("/scannerStart", func(c *gin.Context) {
+		s.pushStart(c)
+	})
+
+	r.GET("/getLastTime", func(c *gin.Context) {
 		s.getLastTime(c)
 	})
 

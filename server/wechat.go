@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -37,6 +39,7 @@ func (s *Service) StartWeChat(data VulInfo) {
 	accessToken := s.getAccessToken()
 	fmt.Println(accessToken)
 	template := s.buildHtml(data)
+
 	sendUrl := fmt.Sprintf(s.Conf.SendMsgUrl, accessToken)
 	req, err := http.NewRequest("POST", sendUrl, bytes.NewBuffer(template))
 	req.Header.Set("Content-Type", "application/json")
@@ -53,7 +56,50 @@ func (s *Service) StartWeChat(data VulInfo) {
 	if r.ErrMsg == "ok" {
 		s.addPushed(data)
 	}
+}
 
+func (s *Service) pushStart(c *gin.Context) {
+	type jsonMsg struct {
+		Name      string `json:"host"`
+		StartTime int64  `json:"time"`
+	}
+	accessToken := s.getAccessToken()
+	var formData jsonMsg
+	err := c.BindJSON(&formData)
+	if err != nil {
+		c.JSON(400, gin.H{"errcode": 400, "description": "Post Data Err"})
+		return
+	}
+
+	t := SendMsg{
+		Touser:  "@all",
+		MsgType: "textcard",
+		AgentID: s.Conf.AgentID,
+		TextCard: TextCard{
+			Title: "xray开始扫描",
+			Description: fmt.Sprintf("<div class=\"gray\">%s</div>%s 已开始扫描",
+				time.Now().Format("2006-01-02 15:04:05"),
+				formData.Name,
+			),
+			Url: "URL",
+		},
+		EnableIdTrans:        0,
+		EnableDuplicateCheck: 0,
+	}
+	res, err := json.Marshal(t)
+	sendUrl := fmt.Sprintf(s.Conf.SendMsgUrl, accessToken)
+	req, err := http.NewRequest("POST", sendUrl, bytes.NewBuffer(res))
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("response Body:", string(body))
+	var r RetMsg
+	json.Unmarshal([]byte(string(body)), &r)
 }
 
 func (s *Service) getAccessToken() string {
@@ -69,25 +115,26 @@ func (s *Service) getAccessToken() string {
 	}
 	var r RetMsg
 	json.Unmarshal([]byte(string(body)), &r)
-	//fmt.Println(r.AccessToken)
 	return r.AccessToken
 }
 
 func (s *Service) buildHtml(data VulInfo) []byte {
+	hostSlice := strings.Split(data.Detail.Host, ".")
+	filename := hostSlice[len(hostSlice)-2] + "-" + s.Conf.TempFileName
 	t := SendMsg{
 		Touser:  "@all",
 		MsgType: "textcard",
 		AgentID: s.Conf.AgentID,
 		TextCard: TextCard{
-			Title: "Xray漏洞通知",
-			Description: fmt.Sprintf("<div class=\"gray\">%s</div><div class=\"red\">Type: %s</div><br><div class=\"red\">Url: %s</div><br><div class=\"red\">Payload: %s</div>",
+			Title: "xray漏洞通知",
+			Description: fmt.Sprintf("<div class=\"gray\">%s</div><div class=\"red\">VulClass: %s</div><br><div class=\"red\">Url: %s</div><br><div class=\"red\">Payload: %s</div>",
 				time.Now().Format("2006-01-02 15:04:05"),
-				data.Plugin,
+				data.VulClass,
 				data.Detail.Url,
 				data.Detail.Payload,
 			),
-			BtnTxt: "详情",
-			Url:    "URL",
+			BtnTxt: "漏洞详情",
+			Url:    s.Conf.Base.BaseURL + filename + ".html",
 		},
 		EnableIdTrans:        0,
 		EnableDuplicateCheck: 0,

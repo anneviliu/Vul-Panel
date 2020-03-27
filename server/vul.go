@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"html"
 )
 
 type Vul struct {
@@ -16,12 +17,14 @@ type Vul struct {
 	Request  string `gorm:"size:999999"`
 	Response string `gorm:"size:999999"`
 	Times    int64  `gorm:"size:100"`
+	VulClass string `gorm:"size:100"`
 }
 
 type VulInfo struct {
 	Timestamp int64  `json:"create_time"`
 	Detail    Detail `json:"detail"`
 	Plugin    string `json:"plugin"`
+	VulClass  string `json:"vuln_class"`
 }
 
 type Detail struct {
@@ -53,14 +56,18 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 		Url:      data.Detail.Url,
 		Title:    data.Plugin,
 		Payload:  data.Detail.Payload,
-		Request:  data.Detail.Request,
-		Response: data.Detail.Response,
+		Request:  html.EscapeString(data.Detail.Request),
+		Response: html.EscapeString(data.Detail.Response),
 		Times:    data.Timestamp,
+		VulClass: data.VulClass,
 	}
 	if !s.check(data) {
 		fmt.Printf("重复插入记录")
 	} else {
 		s.Mysql.Create(vulData)
+
+		s.writeHTML(data)
+
 		s.StartWeChat(data)
 	}
 }

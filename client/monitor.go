@@ -1,14 +1,17 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
-	"github.com/fsnotify/fsnotify"
+	"github.com/garyburd/redigo/redis"
 	"io/ioutil"
-	"log"
-	"net/http"
+	"os"
+	"strconv"
+	"time"
 )
+
+//TODO: 通过手机端实时查看扫描进程状态
 
 type TimeRet struct {
 	Code     int   `json:"code"`
@@ -42,53 +45,40 @@ type Vul []struct {
 }
 
 func (s *Service) getTask() {
-	s.watchFile("2.json")
+	//s.beginScan("2.json")
+	//s.watchFile("2.json")
+	var (
+		name string
+	)
+	flag.StringVar(&name, "name", "", "Your json name here")
+	flag.Parse()
+	if name != "" {
+		s.beginScan(name)
+		s.watchFile(name)
+	} else {
+		flag.Usage()
+	}
 }
 
 func (s *Service) start(path string) {
 	data := s.parseJson(s.readFile(path))
-	time := s.getLastTime()
+	timeL := s.getLastTime()
+
 	for k, v := range data {
 		// 如果某条json信息时间戳大于服务器记录时间戳，则向服务端发送该信息
-		if v.CreateTime > time.LastTime {
-			vulInfo, err_json := json.Marshal(v)
-			if err_json != nil {
+		fmt.Println(v.CreateTime)
+		if v.CreateTime > timeL.LastTime {
+			vulInfo, errJson := json.Marshal(v)
+			if errJson != nil {
 				fmt.Println("json字符串序列化失败")
+				return
 			}
 			fmt.Println("已发现新消息 " + string(k))
-			req, err := http.NewRequest("POST", "http://"+s.Conf.ServerIP+"/getVulInfo", bytes.NewBuffer(vulInfo))
-			req.Header.Set("Content-Type", "application/json")
-			client := &http.Client{}
-			resp, err := client.Do(req)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(resp)
+			s.pushVulInfo(vulInfo)
+		} else {
+			fmt.Println("监测到修改，无最新漏洞消息")
 		}
 	}
-}
-
-func (s *Service) getLastTime() TimeRet {
-	resp, err := http.Get("http://" + s.Conf.Base.ServerIP + "/getLastTime")
-	if err != nil {
-		fmt.Println("请求时间戳接口失败")
-		return TimeRet{
-			Code:     200,
-			LastTime: 0,
-		}
-	}
-	//defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("获取时间戳响应体失败")
-		return TimeRet{
-			Code:     200,
-			LastTime: 0,
-		}
-	}
-	var timedata TimeRet
-	json.Unmarshal(body, &timedata)
-	return timedata
 }
 
 func (s *Service) readFile(path string) []byte {
@@ -101,14 +91,16 @@ func (s *Service) readFile(path string) []byte {
 
 func (s *Service) parseJson(contents []byte) Vul {
 	var data Vul
+	var i int
 Repaired:
 	jsonErr := json.Unmarshal(contents, &data)
 	if jsonErr != nil {
-		fmt.Println("json解析失败 正在尝试修复")
-		//t := s.repairJson(contents)
-		//fmt.Println(t)
-		//s.parseJson([]byte(t))
+		if i > 5 {
+			fmt.Println("json解析失败次数过多 终止运行")
+			panic(jsonErr)
+		}
 		contents = []byte(s.repairJson(contents))
+		i++
 		goto Repaired
 		return data
 	}
@@ -117,44 +109,64 @@ Repaired:
 }
 
 func (s *Service) repairJson(contents []byte) string {
-	content := string(contents) + "]"
-	//fmt.Println(content)
+	var content string
+	if contents[len(contents)-1] == ',' {
+		fmt.Println("json解析失败 正在尝试修复 ',' ")
+		content = string(contents[0 : len(contents)-1])
+		return content
+	}
+	if contents[len(contents)-1] == ']' {
+		fmt.Println("json解析失败 正在尝试修复 ']' ")
+		return string(contents)
+	} else {
+		content = string(contents) + "]"
+	}
 	return content
 }
 
 func (s *Service) watchFile(path string) {
-	watcher, err := fsnotify.NewWatcher()
+	// 连接redis
+	red, err := redis.Dial("tcp", "127.0.0.1:6379")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Connect to redis error", err)
+		return
 	}
-	defer watcher.Close()
-	err = watcher.Add(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	go func() {
-		for {
-			select {
-			case ev := <-watcher.Events:
-				{
-					//判断事件发生的类型，如下5种
-					// Create 创建
-					// Write 写入
-					// Remove 删除
-					// Rename 重命名
-					// Chmod 修改权限
-					if ev.Op&fsnotify.Write == fsnotify.Write {
-						log.Println("写入文件 : ", ev.Name)
-						s.start(path)
-					}
-				}
-			case err := <-watcher.Errors:
-				{
-					log.Println("error : ", err)
-					return
-				}
+
+	defer red.Close()
+	for {
+		f, err := os.Open(path)
+		if err != nil {
+			fmt.Println("暂未扫描到漏洞...轮询中")
+		} else {
+			defer f.Close()
+			fi, err2 := f.Stat()
+			if err2 != nil {
+				fmt.Println("获取文件状态失败")
+				return
+			}
+			//文件每次修改时间存入redis
+			oldTime, err := redis.String(red.Do("GET", "modTime"))
+
+			if err != nil {
+				fmt.Println("redis get failed:", err)
+				return
+			}
+
+			var strInt int64
+			strInt, err = strconv.ParseInt(oldTime, 10, 64)
+			fmt.Println(fi.ModTime().Unix())
+			if fi.ModTime().Unix() > strInt {
+				s.start(path)
+			} else {
+				fmt.Println("正在轮询")
+			}
+			_, err = red.Do("SET", "modTime", fi.ModTime().Unix())
+
+			if err != nil {
+				fmt.Println("Redis set failed:", err)
 			}
 		}
-	}()
-	select {}
+
+		time.Sleep(time.Duration(1) * time.Second)
+	}
 }

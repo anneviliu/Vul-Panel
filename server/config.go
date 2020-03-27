@@ -12,7 +12,10 @@ type Config struct {
 }
 
 type Base struct {
-	Port string
+	Port         string
+	WebRoot      string
+	BaseURL      string
+	TempFileName string
 }
 
 type Mysql struct {
@@ -23,12 +26,13 @@ type Mysql struct {
 }
 
 type WeChat struct {
-	CorpID         string
-	CorpSecret     string
-	AccessTokenUrl string
-	AdminOpenID    string
-	SendMsgUrl     string
-	AgentID        int
+	CorpID          string
+	CorpSecret      string
+	AccessTokenUrl  string
+	AdminOpenID     string
+	SendMsgUrl      string
+	AgentID         int
+	AccessTokenTemp string
 }
 
 func (s *Service) initConfig() {
