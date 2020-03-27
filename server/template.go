@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"strings"
+	"time"
 )
 
 func (s *Service) writeHTML(data VulInfo) {
@@ -23,7 +24,7 @@ func (s *Service) writeHTML(data VulInfo) {
 	)
 	// 获取漏洞详情html文件名
 	hostSlice := strings.Split(data.Detail.Host, ".")
-	md5s := []byte(data.Detail.Url + data.Detail.Payload)
+	md5s := []byte(data.Detail.Url + data.Detail.Payload + time.Now().String())
 	has := md5.Sum(md5s)
 	ext := fmt.Sprintf("%x", has) //将[]byte转成16进制
 	s.Conf.TempFileName = ext
