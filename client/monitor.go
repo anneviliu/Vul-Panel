@@ -46,7 +46,7 @@ func (s *Service) getTask() {
 }
 
 func (s *Service) start(path string) {
-	data := s.readFile(path)
+	data := s.parseJson(s.readFile(path))
 	time := s.getLastTime()
 	for k, v := range data {
 		// 如果某条json信息时间戳大于服务器记录时间戳，则向服务端发送该信息
@@ -72,28 +72,54 @@ func (s *Service) getLastTime() TimeRet {
 	resp, err := http.Get("http://" + s.Conf.Base.ServerIP + "/getLastTime")
 	if err != nil {
 		fmt.Println("请求时间戳接口失败")
+		return TimeRet{
+			Code:     200,
+			LastTime: 0,
+		}
 	}
 	//defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("获取时间戳响应体失败")
+		return TimeRet{
+			Code:     200,
+			LastTime: 0,
+		}
 	}
 	var timedata TimeRet
 	json.Unmarshal(body, &timedata)
 	return timedata
 }
 
-func (s *Service) readFile(path string) Vul {
+func (s *Service) readFile(path string) []byte {
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Println("本地文件读取失败")
 	}
+	return contents
+}
+
+func (s *Service) parseJson(contents []byte) Vul {
 	var data Vul
+Repaired:
 	jsonErr := json.Unmarshal(contents, &data)
 	if jsonErr != nil {
-		fmt.Println("json解析出错")
+		fmt.Println("json解析失败 正在尝试修复")
+		//t := s.repairJson(contents)
+		//fmt.Println(t)
+		//s.parseJson([]byte(t))
+		contents = []byte(s.repairJson(contents))
+		goto Repaired
+		return data
 	}
+	fmt.Println("json解析成功")
 	return data
+}
+
+func (s *Service) repairJson(contents []byte) string {
+	content := string(contents) + "]"
+	//fmt.Println(content)
+	return content
 }
 
 func (s *Service) watchFile(path string) {

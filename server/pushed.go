@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"strconv"
 )
 
 type Pushed struct {
@@ -35,10 +34,13 @@ func (s *Service) addPushed(data VulInfo) {
 
 func (s *Service) getLastTime(c *gin.Context) {
 	var time Pushed
+	//row := s.Mysql.Find(&Pushed{}).Row()
+	//fmt.Println(row)
 	err := s.Mysql.Where(&Pushed{}).Last(&time).Error
 	if err != nil {
-		c.JSON(500, gin.H{"code": 500, "msg": "数据库错误"})
+		c.JSON(200, gin.H{"code": 500, "msg": "数据库错误"})
+		return
 	}
 	res := time.Times
-	c.JSON(200, gin.H{"code": 200, "msg": strconv.FormatInt(res, 10)})
+	c.JSON(200, gin.H{"code": 200, "msg": res})
 }
