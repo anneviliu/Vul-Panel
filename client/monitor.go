@@ -27,11 +27,13 @@ type Vul []struct {
 			Position string `json:"position"`
 			Value    string `json:"value"`
 		} `json:"param"`
-		Payload  string `json:"payload"`
-		Port     int    `json:"port"`
-		Request  string `json:"request"`
-		Response string `json:"response"`
-		URL      string `json:"url"`
+		Payload   string `json:"payload"`
+		Port      int    `json:"port"`
+		Request   string `json:"request"`
+		Response  string `json:"response"`
+		Request1  string `json:"request1"`
+		Response1 string `json:"response1"`
+		URL       string `json:"url"`
 	} `json:"detail"`
 	Plugin string `json:"plugin"`
 	Target struct {

@@ -28,13 +28,15 @@ type VulInfo struct {
 }
 
 type Detail struct {
-	FileName string `json:"filename"`
-	Url      string `json:"url"`
-	Host     string `json:"host"`
-	Payload  string `json:"payload"`
-	Port     int    `json:"port"`
-	Request  string `json:"request"`
-	Response string `json:"response"`
+	FileName  string `json:"filename"`
+	Url       string `json:"url"`
+	Host      string `json:"host"`
+	Payload   string `json:"payload"`
+	Port      int    `json:"port"`
+	Request   string `json:"request"`
+	Response  string `json:"response"`
+	Request1  string `json:"request1"`
+	Response1 string `json:"response1"`
 }
 
 // 从客户端获取漏洞信息
@@ -50,6 +52,17 @@ func (s *Service) getVulInfo(c *gin.Context) {
 
 // 向数据库中插入漏洞信息
 func (s *Service) add(data VulInfo, c *gin.Context) {
+	if data.Detail.Request == "" {
+		data.Detail.Request = data.Detail.Request1
+	}
+
+	if data.Detail.Response == "" {
+		data.Detail.Response = data.Detail.Response1
+	}
+
+	if data.VulClass == "" {
+		data.VulClass = data.Plugin + " [plugin]"
+	}
 	vulData := &Vul{
 		Host:     data.Detail.Host,
 		Port:     data.Detail.Port,
@@ -75,9 +88,19 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 // 检查该漏洞是否已记录
 func (s *Service) check(data VulInfo) bool {
 	a := s.Mysql.Model(&Pushed{}).Where(&Pushed{
-		Model:    gorm.Model{},
-		Request:  data.Detail.Request,
-		Response: data.Detail.Response,
+		Model: gorm.Model{},
+		/*
+		 *  修复 不得根据request和resp来判断
+		 *  应使用url和plugin 和 payload来判断
+		 */
+
+		//Request:  data.Detail.Request,
+		//Response: data.Detail.Response,
+
+		Url:     data.Detail.Url,
+		Title:   data.Plugin,
+		Payload: data.Detail.Payload,
+		Times:   data.Timestamp,
 	}).First(&Pushed{}).RowsAffected
 	if a == 1 {
 		return false
