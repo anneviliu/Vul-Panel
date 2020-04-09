@@ -29,10 +29,16 @@
 </head>
 <body>
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-    <h5 class="my-0 mr-md-auto font-weight-normal"><a href="index.html" style="text-decoration: none; color: #1b1e21">漏洞管理平台</a></h5>
+    <h5 class="my-0 mr-md-auto font-weight-normal"><a href="/" style="text-decoration: none; color: #1b1e21">漏洞管理平台</a></h5>
     <nav class="my-2 my-md-0 mr-md-3">
-        <a class="p-2 text-dark" href="/register.html">注册</a>
-        <a class="p-2 text-dark" href="/login.html">登录</a>
+        {{if .isLogin}}
+        {{.username}}
+        <a class="p-2 text-dark" href="/vul">控制台</a>
+        <a class="p-2 text-dark" href="/api/logout">退出登录</a>
+        {{else}}
+        <a class="p-2 text-dark" href="/reg">注册</a>
+        <a class="p-2 text-dark" href="/login">登录</a>
+        {{end}}
     </nav>
 </div>
 

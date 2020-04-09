@@ -9,15 +9,16 @@ import (
 
 type Vul struct {
 	gorm.Model
-	Host     string
-	Port     int
-	Url      string `gorm:"size:1000"`
-	Title    string
-	Payload  string `gorm:"size:999999"`
-	Request  string `gorm:"size:999999"`
-	Response string `gorm:"size:999999"`
-	Times    int64  `gorm:"size:100"`
-	VulClass string `gorm:"size:100"`
+	Host         string
+	Port         int
+	Url          string `gorm:"size:1000"`
+	Title        string
+	Payload      string `gorm:"size:999999"`
+	Request      string `gorm:"size:999999"`
+	Response     string `gorm:"size:999999"`
+	Times        int64  `gorm:"size:100"`
+	VulClass     string `gorm:"size:100"`
+	TempFilename string `gorm:"size:500"`
 }
 
 type VulInfo struct {
@@ -64,23 +65,22 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 		data.VulClass = data.Plugin + " [plugin]"
 	}
 	vulData := &Vul{
-		Host:     data.Detail.Host,
-		Port:     data.Detail.Port,
-		Url:      data.Detail.Url,
-		Title:    data.Plugin,
-		Payload:  data.Detail.Payload,
-		Request:  html.EscapeString(data.Detail.Request),
-		Response: html.EscapeString(data.Detail.Response),
-		Times:    data.Timestamp,
-		VulClass: data.VulClass,
+		Host:         data.Detail.Host,
+		Port:         data.Detail.Port,
+		Url:          data.Detail.Url,
+		Title:        data.Plugin,
+		Payload:      data.Detail.Payload,
+		Request:      html.EscapeString(data.Detail.Request),
+		Response:     html.EscapeString(data.Detail.Response),
+		Times:        data.Timestamp,
+		VulClass:     data.VulClass,
+		TempFilename: s.Conf.Base.TempFileName,
 	}
 	if !s.check(data) {
 		fmt.Printf("重复插入记录")
 	} else {
 		s.Mysql.Create(vulData)
-
 		s.writeHTML(data)
-
 		s.StartWeChat(data)
 	}
 }
@@ -96,7 +96,6 @@ func (s *Service) check(data VulInfo) bool {
 
 		//Request:  data.Detail.Request,
 		//Response: data.Detail.Response,
-
 		Url:     data.Detail.Url,
 		Title:   data.Plugin,
 		Payload: data.Detail.Payload,
@@ -107,4 +106,34 @@ func (s *Service) check(data VulInfo) bool {
 	} else {
 		return true
 	}
+}
+
+func (s *Service) getVulList(c *gin.Context) {
+	var vulList []Vul
+	s.Mysql.Order("created_at desc").Limit(100).Find(&vulList)
+	type RecentList struct {
+		ID        uint
+		Host      string
+		CreatedAt string
+		Url       string
+		Title     string
+		Times     string
+	}
+	var res []RecentList
+	for _, v := range vulList {
+		time := v.CreatedAt.Format("2006-01-02 15:04:05")
+		res = append(res, RecentList{
+			ID:        v.ID,
+			Host:      v.Host,
+			CreatedAt: time,
+			Url:       s.Conf.Base.BaseURL + v.TempFilename + ".html",
+			Title:     v.Title,
+			//VulClass:  v.VulClass,
+		})
+	}
+	c.JSON(200, res)
+}
+
+func (s *Service) getAllVul(c *gin.Context) {
+	//var name  =
 }

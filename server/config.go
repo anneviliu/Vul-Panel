@@ -9,6 +9,7 @@ type Config struct {
 	Mysql  `toml:"mysql"`
 	Base   `toml:"base"`
 	WeChat `toml:"wechat"`
+	Admin  `toml:"admin"`
 }
 
 type Base struct {
@@ -33,6 +34,9 @@ type WeChat struct {
 	SendMsgUrl      string
 	AgentID         int
 	AccessTokenTemp string
+}
+type Admin struct {
+	InviteCode string
 }
 
 func (s *Service) initConfig() {

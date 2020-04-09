@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <meta name="theme-color" content="#563d7c">
 
-
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
@@ -25,13 +24,12 @@
             }
         }
     </style>
-    <link href="/static/css/offcanvas.css" rel="stylesheet">
+    <link href="/static/css/vlist.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
 <div  id="app">
 <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-white">
-<!--    <a class="navbar-brand mr-auto mr-lg-0" href="#">漏洞管理平台</a>-->
     <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -39,10 +37,13 @@
     <div class="navbar-collapse offcanvas-collapse">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
+                <a class="nav-link" href="/">主页</a>
+            </li>
+            <li class="nav-item active">
                 <a class="nav-link" href="#">漏洞列表<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">推送管理</a>
+                <a class="nav-link" href="/alert">推送管理</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Profile</a>
@@ -68,46 +69,20 @@
 
         <div class="my-3 p-3 bg-white rounded shadow-sm">
             <h6 class="border-bottom border-gray pb-2 mb-0">最新漏洞</h6>
-<!--                <div class="media text-muted pt-3">-->
-<!--                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">-->
-<!--                        <strong class="d-block text-gray-dark">@username</strong>-->
-<!--                    </p>-->
-<!--                </div>-->
+
             <div v-html="recentList"></div>
+
             <small class="d-block text-right mt-3">
-                <a href="#">所有漏洞</a>
+                <a href="/all">所有漏洞</a>
             </small>
         </div>
     </main>
 
 </div>
 <!--<script src="/static/js/vue.min.js"></script>-->
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/axios.min.js"></script>
 <script src="/static/js/jquery.slim.min.js"></script>
 <script>window.jQuery || document.write('<script src="/static/js/jquery.slim.min.js"><\/script>')</script><script src="/static/js/bootstrap.bundle.min.js"></script>
-<script src="offcanvas.js"></script></body>
-<script>
-    new Vue({
-        el: '#app',
-        data() {
-            return {
-                test: "",
-                recentList: ""
-            }
-        },
-        created() {
-            this.testData = [{time : "2020-03-01", vulData: "asdadadas", link: "http://xray.lwh.red/aaa"}, {time : "2017-01-22", vulData: "cccccc"}]
-            for(var i in this.testData) {
-                this.recentList +=
-                    "                <div class=\"media text-muted pt-3\">\n" +
-                    "                    <p class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\">\n" +
-                    "                        <strong class=\"d-block text-gray-dark\">"+this.testData[i].time+"</strong>\n" +
-                                               this.testData[i].vulData + this.testData[i].link +
-                    "</p>\n" +
-                    "                </div>"
-            }
-        }
-
-    })
-</script>
+<script src="/static/js/vulList.js"></script></body>
 </html>

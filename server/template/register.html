@@ -28,39 +28,49 @@
     <link href="/static/css/pricing.css" rel="stylesheet">
 </head>
 <body>
-<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-    <h5 class="my-0 mr-md-auto font-weight-normal"><a href="index.html" style="text-decoration: none; color: #1b1e21">漏洞管理平台</a></h5>
-    <nav class="my-2 my-md-0 mr-md-3">
-        <a class="p-2 text-dark" href="/register.html">注册</a>
-        <a class="p-2 text-dark" href="/login.html">登录</a>
-    </nav>
+<div id="app">
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <h5 class="my-0 mr-md-auto font-weight-normal"><a href="/" style="text-decoration: none; color: #1b1e21">漏洞管理平台</a></h5>
+        <nav class="my-2 my-md-0 mr-md-3">
+            <a class="p-2 text-dark" href="/reg">注册</a>
+            <a class="p-2 text-dark" href="/login">登录</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="form-signin">
+            <div class="text-center mb-4">
+                <img class="mb-4" src="/static/image/logo.svg" alt="" width="72" height="72">
+                <h1 class="h3 mb-3 font-weight-normal">用户注册</h1>
+            </div>
+
+            <div class="form-label-group">
+                <input type="email" v-model="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+                <label for="inputEmail">Email address</label>
+            </div>
+
+            <div class="form-label-group">
+                <input type="email" v-model="username" id="inputUsername" class="form-control" placeholder="username" required autofocus>
+                <label for="inputEmail">Username</label>
+            </div>
+
+            <div class="form-label-group">
+                <input type="password" v-model="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                <label for="inputPassword">Password</label>
+            </div>
+
+            <div class="form-label-group">
+                <input type="password" v-model="inviteCode" id="inviteCode" class="form-control" placeholder="inviteCode" required>
+                <label for="inputPassword">InviteCode</label>
+            </div>
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit" @click="register">注册</button>
+            <p class="mt-5 mb-3 text-muted text-center">&copy; 2020-2020 Annevi</p>
+        </div>
+    </div>
 </div>
-
-<div class="container">
-    <form class="form-signin">
-        <div class="text-center mb-4">
-            <img class="mb-4" src="/static/image/logo.svg" alt="" width="72" height="72">
-            <h1 class="h3 mb-3 font-weight-normal">用户注册</h1>
-        </div>
-
-        <div class="form-label-group">
-            <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-            <label for="inputEmail">Email address</label>
-        </div>
-
-        <div class="form-label-group">
-            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-            <label for="inputPassword">Password</label>
-        </div>
-
-        <div class="form-label-group">
-            <input type="password" id="inviteCode" class="form-control" placeholder="inviteCode" required>
-            <label for="inputPassword">inviteCode</label>
-        </div>
-
-        <button class="btn btn-lg btn-primary btn-block" type="submit">注册</button>
-        <p class="mt-5 mb-3 text-muted text-center">&copy; 2020-2020 Annevi</p>
-    </form>
-</div>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/axios.min.js"></script>
+<script src="/static/js/reg.js"></script>
 </body>
 </html>

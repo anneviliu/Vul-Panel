@@ -20,5 +20,5 @@ func (s *Service) initMysql() {
 	}
 
 	s.Mysql = db
-	s.Mysql.AutoMigrate(&Vul{}, &Pushed{})
+	s.Mysql.AutoMigrate(&Vul{}, &Pushed{}, &RegUser{})
 }

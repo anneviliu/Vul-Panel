@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -119,8 +118,6 @@ func (s *Service) getAccessToken() string {
 }
 
 func (s *Service) buildHtml(data VulInfo) []byte {
-	hostSlice := strings.Split(data.Detail.Host, ".")
-	filename := hostSlice[len(hostSlice)-2] + "-" + s.Conf.TempFileName
 	t := SendMsg{
 		Touser:  "@all",
 		MsgType: "textcard",
@@ -134,7 +131,7 @@ func (s *Service) buildHtml(data VulInfo) []byte {
 				data.Detail.Payload,
 			),
 			BtnTxt: "漏洞详情",
-			Url:    s.Conf.Base.BaseURL + filename + ".html",
+			Url:    s.Conf.Base.BaseURL + s.Conf.TempFileName + ".html",
 		},
 		EnableIdTrans:        0,
 		EnableDuplicateCheck: 0,

@@ -27,12 +27,11 @@ func (s *Service) writeHTML(data VulInfo) {
 	md5s := []byte(data.Detail.Url + data.Detail.Payload + time.Now().String())
 	has := md5.Sum(md5s)
 	ext := fmt.Sprintf("%x", has) //将[]byte转成16进制
-	s.Conf.TempFileName = ext
-	filename := hostSlice[len(hostSlice)-2] + "-" + s.Conf.TempFileName
+	s.Conf.TempFileName = hostSlice[len(hostSlice)-2] + "-" + ext
 
-	if err := ioutil.WriteFile(s.Conf.Base.WebRoot+filename+".html", []byte(template), 0777); err != nil {
+	if err := ioutil.WriteFile(s.Conf.Base.WebRoot+s.Conf.TempFileName+".html", []byte(template), 0777); err != nil {
 		log.Println(err.Error())
 		return
 	}
-	fmt.Println(filename + ".html" + "静态页面写入成功")
+	fmt.Println(s.Conf.TempFileName + ".html" + "静态页面写入成功")
 }
