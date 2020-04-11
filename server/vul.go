@@ -64,23 +64,24 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 	if data.VulClass == "" {
 		data.VulClass = data.Plugin + " [plugin]"
 	}
-	vulData := &Vul{
-		Host:         data.Detail.Host,
-		Port:         data.Detail.Port,
-		Url:          data.Detail.Url,
-		Title:        data.Plugin,
-		Payload:      data.Detail.Payload,
-		Request:      html.EscapeString(data.Detail.Request),
-		Response:     html.EscapeString(data.Detail.Response),
-		Times:        data.Timestamp,
-		VulClass:     data.VulClass,
-		TempFilename: s.Conf.Base.TempFileName,
-	}
+
 	if !s.check(data) {
 		fmt.Printf("重复插入记录")
 	} else {
 		s.writeHTML(data)
 		s.StartWeChat(data)
+		vulData := &Vul{
+			Host:         data.Detail.Host,
+			Port:         data.Detail.Port,
+			Url:          data.Detail.Url,
+			Title:        data.Plugin,
+			Payload:      data.Detail.Payload,
+			Request:      html.EscapeString(data.Detail.Request),
+			Response:     html.EscapeString(data.Detail.Response),
+			Times:        data.Timestamp,
+			VulClass:     data.VulClass,
+			TempFilename: s.Conf.TempFileName,
+		}
 		s.Mysql.Create(vulData)
 	}
 }

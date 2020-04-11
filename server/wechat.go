@@ -131,7 +131,7 @@ func (s *Service) buildHtml(data VulInfo) []byte {
 				data.Detail.Payload,
 			),
 			BtnTxt: "漏洞详情",
-			Url:    s.Conf.Base.BaseURL + s.Conf.TempFileName + ".html",
+			Url:    s.Conf.Base.BaseURL + s.Conf.Base.TempFileName + ".html",
 		},
 		EnableIdTrans:        0,
 		EnableDuplicateCheck: 0,
