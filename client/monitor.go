@@ -138,9 +138,8 @@ func (s *Service) watchFile(path string) {
 	for {
 		f, err := os.Open(path)
 		if err != nil {
-			fmt.Println("暂未扫描到漏洞...轮询中")
+			fmt.Println("打开漏洞json文件错误", err)
 		} else {
-			defer f.Close()
 			fi, err2 := f.Stat()
 			if err2 != nil {
 				fmt.Println("获取文件状态失败")
@@ -170,5 +169,6 @@ func (s *Service) watchFile(path string) {
 		}
 
 		time.Sleep(time.Duration(1) * time.Second)
+		f.Close()
 	}
 }
