@@ -79,9 +79,9 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 	if !s.check(data) {
 		fmt.Printf("重复插入记录")
 	} else {
-		s.Mysql.Create(vulData)
 		s.writeHTML(data)
 		s.StartWeChat(data)
+		s.Mysql.Create(vulData)
 	}
 }
 
@@ -110,7 +110,7 @@ func (s *Service) check(data VulInfo) bool {
 
 func (s *Service) getVulList(c *gin.Context) {
 	var vulList []Vul
-	s.Mysql.Order("created_at desc").Limit(100).Find(&vulList)
+	s.Mysql.Order("created_at desc").Find(&vulList)
 	type RecentList struct {
 		ID        uint
 		Host      string
