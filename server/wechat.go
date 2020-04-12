@@ -52,7 +52,7 @@ func (s *Service) StartWeChat(data VulInfo) {
 	fmt.Println("response Body:", string(body))
 	var r RetMsg
 	json.Unmarshal([]byte(string(body)), &r)
-	if r.ErrMsg == "ok" {
+	if r.ErrMsg == "ok" && s.Conf.Debug == false {
 		s.addPushed(data)
 	}
 }

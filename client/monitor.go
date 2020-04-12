@@ -47,18 +47,20 @@ type Vul []struct {
 }
 
 func (s *Service) getTask() {
-	//s.beginScan("2.json")
-	//s.watchFile("2.json")
-	var (
-		name string
-	)
-	flag.StringVar(&name, "name", "", "Your json name here")
-	flag.Parse()
-	if name != "" {
-		s.beginScan(name)
-		s.watchFile(name)
+	if s.Conf.Debug {
+		s.watchFile("2.json")
 	} else {
-		flag.Usage()
+		var (
+			name string
+		)
+		flag.StringVar(&name, "name", "", "Your json name here")
+		flag.Parse()
+		if name != "" {
+			s.beginScan(name)
+			s.watchFile(name)
+		} else {
+			flag.Usage()
+		}
 	}
 }
 

@@ -17,6 +17,7 @@ type Base struct {
 	WebRoot      string
 	BaseURL      string
 	TempFileName string
+	Debug        bool
 }
 
 type Mysql struct {

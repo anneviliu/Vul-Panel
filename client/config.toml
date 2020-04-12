@@ -1,2 +1,3 @@
 [base]
 ServerIP="localhost:8888"
+Debug=true

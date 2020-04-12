@@ -11,6 +11,7 @@ type Config struct {
 
 type Base struct {
 	ServerIP string
+	Debug    bool
 }
 
 func (s *Service) initConfig() {

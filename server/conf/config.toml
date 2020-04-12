@@ -1,7 +1,8 @@
 [base]
 Port=":8888"
 BaseURL="http://xray/"
-WebRoot="./"
+WebRoot="./vulinfo"
+Debug=true
 
 [mysql]
 DBHost="localhost:33060"
@@ -10,11 +11,11 @@ DBPassword="root"
 DBName="Xray"
 
 [wechat]
-CorpID=""
-CorpSecret=""
+CorpID="ww5143d142b9014209"
+CorpSecret="gK2SJQ6Y6W0aRKEC9uxs44RDCRqhBQKi6SxusIWSxBY"
 AccessTokenUrl="https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s"
 SendMsgUrl="https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s"
-AgentID=
+AgentID=1000002
 
 [admin]
-InviteCode = ""
+InviteCode = "annevinb!"

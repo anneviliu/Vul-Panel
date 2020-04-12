@@ -7,6 +7,7 @@ import (
 	"html"
 )
 
+// 漏洞信息 数据库模型
 type Vul struct {
 	gorm.Model
 	Host         string
@@ -19,8 +20,10 @@ type Vul struct {
 	Times        int64  `gorm:"size:100"`
 	VulClass     string `gorm:"size:100"`
 	TempFilename string `gorm:"size:500"`
+	Read         bool   `gorm:"default:false"` // 是否已读
 }
 
+// 客户端返回数据json结构体
 type VulInfo struct {
 	Timestamp int64  `json:"create_time"`
 	Detail    Detail `json:"detail"`
@@ -68,21 +71,40 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 	if !s.check(data) {
 		fmt.Printf("重复插入记录")
 	} else {
-		s.writeHTML(data)
-		s.StartWeChat(data)
-		vulData := &Vul{
-			Host:         data.Detail.Host,
-			Port:         data.Detail.Port,
-			Url:          data.Detail.Url,
-			Title:        data.Plugin,
-			Payload:      data.Detail.Payload,
-			Request:      html.EscapeString(data.Detail.Request),
-			Response:     html.EscapeString(data.Detail.Response),
-			Times:        data.Timestamp,
-			VulClass:     data.VulClass,
-			TempFilename: s.Conf.TempFileName,
+		// 调试模式判断
+		if s.Conf.Debug {
+			fmt.Println("当前为DEBUG模式")
+			s.writeHTML(data)
+			vulData := &Vul{
+				Host:         data.Detail.Host,
+				Port:         data.Detail.Port,
+				Url:          data.Detail.Url,
+				Title:        data.Plugin,
+				Payload:      data.Detail.Payload,
+				Request:      html.EscapeString(data.Detail.Request),
+				Response:     html.EscapeString(data.Detail.Response),
+				Times:        data.Timestamp,
+				VulClass:     data.VulClass,
+				TempFilename: s.Conf.TempFileName,
+			}
+			s.Mysql.Create(vulData)
+		} else {
+			s.writeHTML(data)
+			s.StartWeChat(data)
+			vulData := &Vul{
+				Host:         data.Detail.Host,
+				Port:         data.Detail.Port,
+				Url:          data.Detail.Url,
+				Title:        data.Plugin,
+				Payload:      data.Detail.Payload,
+				Request:      html.EscapeString(data.Detail.Request),
+				Response:     html.EscapeString(data.Detail.Response),
+				Times:        data.Timestamp,
+				VulClass:     data.VulClass,
+				TempFilename: s.Conf.TempFileName,
+			}
+			s.Mysql.Create(vulData)
 		}
-		s.Mysql.Create(vulData)
 	}
 }
 
@@ -109,6 +131,7 @@ func (s *Service) check(data VulInfo) bool {
 	}
 }
 
+// 返回漏洞列表数据
 func (s *Service) getVulList(c *gin.Context) {
 	var vulList []Vul
 	s.Mysql.Order("created_at desc").Find(&vulList)
@@ -116,6 +139,7 @@ func (s *Service) getVulList(c *gin.Context) {
 		ID        uint
 		Host      string
 		CreatedAt string
+		VulUrl    string
 		Url       string
 		Title     string
 		Times     string
@@ -126,9 +150,10 @@ func (s *Service) getVulList(c *gin.Context) {
 		res = append(res, RecentList{
 			ID:        v.ID,
 			Host:      v.Host,
+			VulUrl:    v.Url,
 			CreatedAt: time,
 			Url:       s.Conf.Base.BaseURL + v.TempFilename + ".html",
-			Title:     v.Title,
+			Title:     v.VulClass,
 			//VulClass:  v.VulClass,
 		})
 	}
@@ -137,4 +162,8 @@ func (s *Service) getVulList(c *gin.Context) {
 
 func (s *Service) getAllVul(c *gin.Context) {
 	//var name  =
+}
+
+func (s *Service) pinRead(info Vul) {
+	s.Mysql.Model(&info).Where("id=?", info.ID).Update("read", true)
 }

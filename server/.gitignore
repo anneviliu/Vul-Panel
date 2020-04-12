@@ -1,0 +1,6 @@
+.DS_Store
+.Ds_Store
+.idea
+server_linux
+vulinfo/
+config.toml
