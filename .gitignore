@@ -1,3 +1,13 @@
+.DS_Store
 .Ds_Store
-.idea/
+.idea
+server_linux
+vulinfo/
+config.toml
+2.json
+1.txt
+client
+client_linux
+xray_wechat_client
+plugin/
 
