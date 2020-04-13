@@ -143,6 +143,7 @@ func (s *Service) getVulList(c *gin.Context) {
 		Url       string
 		Title     string
 		Times     string
+		Read      bool
 	}
 	var res []RecentList
 	for _, v := range vulList {
@@ -152,8 +153,9 @@ func (s *Service) getVulList(c *gin.Context) {
 			Host:      v.Host,
 			VulUrl:    v.Url,
 			CreatedAt: time,
-			Url:       s.Conf.Base.BaseURL + v.TempFilename + ".html",
+			Url:       "/vulinfo/" + v.TempFilename,
 			Title:     v.VulClass,
+			Read:      v.Read,
 			//VulClass:  v.VulClass,
 		})
 	}
@@ -164,6 +166,24 @@ func (s *Service) getAllVul(c *gin.Context) {
 	//var name  =
 }
 
-func (s *Service) pinRead(info Vul) {
-	s.Mysql.Model(&info).Where("id=?", info.ID).Update("read", true)
+func (s *Service) getVulByName(name string) (Vul, bool) {
+	var data Vul
+	a := s.Mysql.Model(&Vul{}).Where("temp_filename = ?", name).Find(&data).RowsAffected
+	if a > 0 {
+		return data, true
+	} else {
+		return data, false
+	}
+
+}
+
+// 标记已读
+func (s *Service) pinRead(name string) {
+	var info Vul
+	a := s.Mysql.Model(&Vul{}).Where("temp_filename = ?", name).Find(&info).RowsAffected
+	if a > 0 {
+		s.Mysql.Model(&info).Where("temp_filename = ?", name).Update("read", true)
+	} else {
+		return
+	}
 }

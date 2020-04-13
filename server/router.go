@@ -92,6 +92,18 @@ func (s *Service) initRouter() *gin.Engine {
 		r.GET("/reg", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "register.html", gin.H{})
 		})
+
+		r.GET("/vulinfo/:filename", func(c *gin.Context) {
+			filename := c.Param("filename")
+			res, suc := s.getVulByName(filename)
+			s.pinRead(filename)
+			if suc {
+				c.HTML(http.StatusOK, "template.html", gin.H{"info": res})
+			} else {
+				c.String(403, "没有找到资源~")
+			}
+
+		})
 	}
 	return r
 }

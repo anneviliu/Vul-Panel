@@ -1,7 +1,6 @@
 [base]
 Port=":8888"
 BaseURL="http://xray/"
-WebRoot="./vulinfo"
 Debug=true
 
 [mysql]
@@ -18,4 +17,4 @@ SendMsgUrl="https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s"
 AgentID=1000002
 
 [admin]
-InviteCode = "annevinb!"
+InviteCode = ""
