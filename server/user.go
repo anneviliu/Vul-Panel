@@ -75,7 +75,7 @@ func (s *Service) login(c *gin.Context) {
 func (s *Service) getSession(c *gin.Context) bool {
 	session := sessions.Default(c)
 	mail := session.Get("mail")
-	fmt.Println("mail:", mail)
+	//fmt.Println("mail:", mail)
 	if mail != nil {
 		return true
 	} else {

@@ -49,4 +49,7 @@ func (s *Service) initConfig() {
 
 	s.Conf = conf
 	log.Println("config load success")
+	if s.Conf.Debug {
+		log.Println("当前为DEBUG模式")
+	}
 }

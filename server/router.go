@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func (s *Service) initRouter() *gin.Engine {
@@ -39,6 +40,24 @@ func (s *Service) initRouter() *gin.Engine {
 
 		r.GET("/getLastTime", func(c *gin.Context) {
 			s.getLastTime(c)
+		})
+
+		r.GET("/api/getTotalItems", func(c *gin.Context) {
+			if s.getSession(c) {
+				s.getTotalItems(c)
+			} else {
+				c.String(403, "403")
+			}
+		})
+
+		r.GET("/api/getListByPage", func(c *gin.Context) {
+			if s.getSession(c) {
+				p := c.Query("p")
+				pageInt, _ := strconv.Atoi(p)
+				s.getListByPage(pageInt, 20, c)
+			} else {
+				c.String(403, "403")
+			}
 		})
 
 		r.GET("/api/recentList", func(c *gin.Context) {

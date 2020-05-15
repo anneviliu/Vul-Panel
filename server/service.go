@@ -15,6 +15,5 @@ func (s *Service) init() {
 	s.initConfig()
 	s.initMysql()
 	s.Router = s.initRouter()
-	//s.getVulList()
 	panic(s.Router.Run(s.Conf.Base.Port))
 }

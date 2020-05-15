@@ -74,7 +74,7 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 		// 调试模式判断
 		if s.Conf.Debug {
 			fmt.Println("当前为DEBUG模式")
-			s.writeHTML(data)
+			s.genFilename(data)
 			vulData := &Vul{
 				Host:         data.Detail.Host,
 				Port:         data.Detail.Port,
@@ -89,7 +89,7 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 			}
 			s.Mysql.Create(vulData)
 		} else {
-			s.writeHTML(data)
+			s.genFilename(data)
 			s.StartWeChat(data)
 			vulData := &Vul{
 				Host:         data.Detail.Host,
@@ -156,7 +156,6 @@ func (s *Service) getVulList(c *gin.Context) {
 			Url:       "/vulinfo/" + v.TempFilename,
 			Title:     v.VulClass,
 			Read:      v.Read,
-			//VulClass:  v.VulClass,
 		})
 	}
 	c.JSON(200, res)
@@ -174,7 +173,6 @@ func (s *Service) getVulByName(name string) (Vul, bool) {
 	} else {
 		return data, false
 	}
-
 }
 
 // 标记已读

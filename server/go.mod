@@ -3,6 +3,7 @@ module server
 go 1.13
 
 require (
+	github.com/BillSJC/gorm-pageable v0.0.2
 	github.com/BurntSushi/toml v0.3.1
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.6.2

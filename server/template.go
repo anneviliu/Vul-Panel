@@ -3,33 +3,60 @@ package main
 import (
 	"crypto/md5"
 	"fmt"
+	pageable "github.com/BillSJC/gorm-pageable"
+	"github.com/gin-gonic/gin"
 	"strings"
 	"time"
 )
 
-func (s *Service) writeHTML(data VulInfo) {
+func (s *Service) genFilename(data VulInfo) {
 	// 生成漏洞详情html文件名
 	hostSlice := strings.Split(data.Detail.Host, ".")
 	md5s := []byte(data.Detail.Url + data.Detail.Payload + time.Now().String())
 	has := md5.Sum(md5s)
 	ext := fmt.Sprintf("%x", has) //将[]byte转成16进制
 	s.Conf.TempFileName = hostSlice[len(hostSlice)-2] + "-" + ext
-	//contents, err := ioutil.ReadFile("./conf/template.html")
-	//if err != nil {
-	//	fmt.Println("本地文件读取失败")
-	//}
-	//
-	//template := string(contents)
-	//template = fmt.Sprintf(template,
-	//	data.Detail.Url,
-	//	data.VulClass,
-	//	html.EscapeString(data.Detail.Request),
-	//	html.EscapeString(data.Detail.Response),
-	//)
-	//
-	//if err := ioutil.WriteFile(s.Conf.Base.WebRoot+s.Conf.TempFileName+".html", []byte(template), 0777); err != nil {
-	//	log.Println(err.Error())
-	//	return
-	//}
-	//fmt.Println(s.Conf.TempFileName + ".html" + "静态页面写入成功")
+}
+
+// 返回漏洞条目总数
+func (s *Service) getTotalItems(c *gin.Context) {
+	var total int
+	s.Mysql.Table("vuls").Count(&total)
+	//fmt.Println(total)
+	c.JSON(200, gin.H{"code": 200, "msg": total})
+}
+
+func (s *Service) getListByPage(pageNum int, pageSize int, c *gin.Context) {
+	resultSet := make([]*Vul, 0, 30)
+	handler := s.Mysql.Model(&Vul{}).Order("created_at desc")
+	//pageNumint, _ := strconv.Atoi(pageNum)
+	//fmt.Println(pageNum)
+	_, err := pageable.PageQuery(pageNum, pageSize, handler, &resultSet)
+	if err != nil {
+		panic(err)
+	}
+	type RecentList struct {
+		ID        uint
+		Host      string
+		CreatedAt string
+		VulUrl    string
+		Url       string
+		Title     string
+		Times     string
+		Read      bool
+	}
+	var res []RecentList
+	for _, v := range resultSet {
+		time := v.CreatedAt.Format("2006-01-02 15:04:05")
+		res = append(res, RecentList{
+			ID:        v.ID,
+			Host:      v.Host,
+			VulUrl:    v.Url,
+			CreatedAt: time,
+			Url:       "/vulinfo/" + v.TempFilename,
+			Title:     v.VulClass,
+			Read:      v.Read,
+		})
+	}
+	c.JSON(200, res)
 }
