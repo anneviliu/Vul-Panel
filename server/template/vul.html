@@ -70,7 +70,7 @@
         <div class="my-3 p-3 bg-white rounded shadow-sm">
             <h6 class="border-bottom border-gray pb-2 mb-0">最新漏洞</h6>
 
-            <div v-html="recentList"></div>
+            <div v-html="VulList"></div>
             <ul class="pagination">
                 <li class="page-item"><a class="page-link" @click="switchToPage(pageNow-1)" href="#">Previous</a></li>
                 <li class="page-item" v-for="n in totalPages" :class="{active:n==pageNow}">

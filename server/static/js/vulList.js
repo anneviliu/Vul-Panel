@@ -4,13 +4,14 @@ new Vue({
     data() {
         return {
             test: "",
-            recentList: "",
+            VulList: "",
             vulData: this.vulData,
             totalItems: 0,
             totalPages: 0,
             perPage : 20,
             pageNow : 1,
-            pageList : []
+            pageList : [],
+            pageListContent:""
         }
     },
     created() {
@@ -19,7 +20,7 @@ new Vue({
         } else {
            this.pageNow = localStorage.getItem("pageNow")
         }
-        this.loadList(this.pageNow)
+        this.loadVulList(this.pageNow)
     },
     methods:{
         async getListByPage(p) {
@@ -29,13 +30,10 @@ new Vue({
             return await axios.get('/api/getPages?t=totalPages')
         },
 
-        async loadList(page) {
-            this.recentList = ""
-            this.vulData = (await this.getListByPage(page)).data;
+        async loadVulList(page) {
             this.totalPages = (await this.getTotalPages()).data;
-            // if (this.totalPages > 10 ) {
-            //     this.pageList.push
-            // }
+            this.VulList = ""
+            this.vulData = (await this.getListByPage(page)).data;
             var color = ""
             console.log(this.vulData);
             for (var i in this.vulData) {
@@ -50,7 +48,7 @@ new Vue({
                 } else {
                     VulUrl = this.vulData[i].VulUrl
                 }
-                this.recentList +=
+                this.VulList +=
                     "                <div class=\"media text-muted pt-3\">" +
                     "                    <p class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\">" +
                     "                        <strong class=\"d-block text-gray-dark\">" + this.vulData[i].CreatedAt + "</strong>" +
@@ -58,7 +56,7 @@ new Vue({
                     "                </div>"
             }
         },
-
+        
         switchToPage: function (pageNo) {
             if (pageNo < 0 || pageNo > this.totalPages+1){
                 return false;
@@ -67,6 +65,12 @@ new Vue({
             this.loadList(pageNo)
             localStorage.setItem("pageNow",pageNo)
         },
+
+        loadPageList() {
+            var index = 10
+
+        }
+
     }
 
 });
