@@ -26,14 +26,20 @@ func (s *Service) getTotalItems(c *gin.Context) {
 	c.JSON(200, gin.H{"code": 200, "msg": total})
 }
 
-func (s *Service) getListByPage(pageNum int, pageSize int, c *gin.Context) {
+func (s *Service) getListByPage(t string, pageNum int, pageSize int, c *gin.Context) {
+
 	resultSet := make([]*Vul, 0, 30)
 	handler := s.Mysql.Model(&Vul{}).Order("created_at desc")
 	//pageNumint, _ := strconv.Atoi(pageNum)
 	//fmt.Println(pageNum)
-	_, err := pageable.PageQuery(pageNum, pageSize, handler, &resultSet)
+	r, err := pageable.PageQuery(pageNum, pageSize, handler, &resultSet)
+
 	if err != nil {
 		panic(err)
+	}
+	if t == "totalPages" {
+		c.JSON(200, r.PageCount)
+		return
 	}
 	type RecentList struct {
 		ID        uint

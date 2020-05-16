@@ -42,7 +42,7 @@ func (s *Service) initRouter() *gin.Engine {
 			s.getLastTime(c)
 		})
 
-		r.GET("/api/getTotalItems", func(c *gin.Context) {
+		r.GET("/api/getTotalPages", func(c *gin.Context) {
 			if s.getSession(c) {
 				s.getTotalItems(c)
 			} else {
@@ -50,11 +50,12 @@ func (s *Service) initRouter() *gin.Engine {
 			}
 		})
 
-		r.GET("/api/getListByPage", func(c *gin.Context) {
+		r.GET("/api/getPages", func(c *gin.Context) {
 			if s.getSession(c) {
 				p := c.Query("p")
+				t := c.Query("t")
 				pageInt, _ := strconv.Atoi(p)
-				s.getListByPage(pageInt, 20, c)
+				s.getListByPage(t, pageInt, 20, c)
 			} else {
 				c.String(403, "403")
 			}
