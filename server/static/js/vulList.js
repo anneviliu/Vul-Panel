@@ -11,10 +11,11 @@ new Vue({
             perPage : 20,
             pageNow : 1,
             pageList : [],
-            pageListContent:""
         }
     },
-    created() {
+
+    mounted() {
+        this.loadPageList()
         if (localStorage.getItem("pageNow") == null) {
             this.pageNow = 0
         } else {
@@ -31,11 +32,10 @@ new Vue({
         },
 
         async loadVulList(page) {
-            this.totalPages = (await this.getTotalPages()).data;
             this.VulList = ""
             this.vulData = (await this.getListByPage(page)).data;
             var color = ""
-            console.log(this.vulData);
+            // console.log(this.vulData);
             for (var i in this.vulData) {
                 if (this.vulData[i].Read) {
                     color = "#0090ff"
@@ -61,16 +61,34 @@ new Vue({
             if (pageNo < 0 || pageNo > this.totalPages+1){
                 return false;
             }
-            this.pageNow = pageNo
-            this.loadList(pageNo)
             localStorage.setItem("pageNow",pageNo)
+            this.pageNow = pageNo
+
+            this.loadVulList(pageNo)
+            this.loadPageList()
         },
 
-        loadPageList() {
-            var index = 10
-
+        async loadPageList() {
+            var limit = 20
+            var i = 1
+            this.pageList = [];
+            this.totalPages = (await this.getTotalPages()).data;
+            // if (this.pageNow > this.totalPages) {
+            //     return false
+            // }
+            if (this.totalPages > limit && this.pageNow < limit-1) {
+                for(i;i<=limit;i++) {
+                    this.pageList.push(i)
+                }
+            }
+            if (this.pageNow >= 19) {
+                this.pageList = []
+                console.log(this.pageList)
+                for(i=this.pageNow-18;i<=this.pageNow +1 ;i++) {
+                    this.pageList.push(i)
+                }
+            }
         }
-
     }
 
 });
