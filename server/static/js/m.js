@@ -15,6 +15,7 @@ new Vue({
     },
 
     mounted() {
+        this.pageList = [];
         this.loadPageList()
         if (localStorage.getItem("pageNow") == null) {
             this.pageNow = 0
@@ -35,7 +36,8 @@ new Vue({
             this.VulList = ""
             this.vulData = (await this.getListByPage(page)).data;
             var color = ""
-            // console.log(this.vulData);
+            var status = "<a href=\"#\" class=\"badge badge-secondary\">Status</a>"
+
             for (var i in this.vulData) {
                 if (this.vulData[i].Read) {
                     color = "#0090ff"
@@ -50,7 +52,7 @@ new Vue({
                 }
                 this.VulList +=
                     "                <div class=\"media text-muted pt-3\">" +
-                    "                    <p class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\">" +
+                    "                    <p class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\"> "+ status +
                     "                        <strong class=\"d-block text-gray-dark\">" + this.vulData[i].CreatedAt + "</strong>" +
                     "<a style='color: " + color + ";font-weight:bold; text-decoration: none' href="+ this.vulData[i].Url + ">" + this.vulData[i].Host +"</a>" + "<a style='padding-left: 50px'>"+VulUrl + "</a>" + "<p style='color: red;font-size: 12px;'>" +this.vulData[i].Title + "</p>" +
                     "                </div>"
@@ -58,7 +60,7 @@ new Vue({
         },
         
         switchToPage: function (pageNo) {
-            if (pageNo < 0 || pageNo > this.totalPages+1){
+            if (pageNo <= 0 || pageNo > this.totalPages+1){
                 return false;
             }
             localStorage.setItem("pageNow",pageNo)
@@ -69,40 +71,30 @@ new Vue({
         },
 
         async loadPageList() {
+            this.pageList = [];
             var limit = 20
             var i = 1
-            this.pageList = [];
             this.totalPages = (await this.getTotalPages()).data;
-            // if (this.pageNow > this.totalPages) {
-            //     return false
-            // }
-            if (this.totalPages > limit && this.pageNow < limit-1) {
+            if (Number(this.pageNow) > this.totalPages) {
+                return false
+            }
+
+            if (this.totalPages > limit && Number(this.pageNow) < limit-1) {
                 for(i;i<=limit;i++) {
                     this.pageList.push(i)
                 }
             }
-            if (this.pageNow >= 19) {
+
+            if (Number(this.pageNow) >= 19) {
                 this.pageList = []
-                console.log(this.pageList)
-                for(i=this.pageNow-18;i<=this.pageNow +1 ;i++) {
-                    this.pageList.push(i)
+                for(var j=Number(this.pageNow)-18;j<=Number(this.pageNow)+1 ;j++) {
+                    if (Number(this.pageNow) +1 > this.totalPages) {
+                        return false
+                    }
+                    this.pageList.push(j)
                 }
             }
         }
     }
 
 });
-
-// function getListByPage(pageNow) {
-//     $.ajax({
-//         url:"/user/"+pageNow,
-//         success:function (datas) {
-//             vueApp.userList = datas.content;
-//             vueApp.totalPages = datas.totalPages;
-//             vueApp.pageNow = pageNow;
-//         },
-//         error:function (res) {
-//             console.log(res);
-//         }
-//     });
-// }

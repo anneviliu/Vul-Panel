@@ -69,14 +69,13 @@ func (s *Service) initRouter() *gin.Engine {
 			}
 		})
 
-		r.GET("/api/all", func(c *gin.Context) {
-			if s.getSession(c) {
-				s.getAllVul(c)
-			} else {
-				c.String(403, "403")
-			}
+		r.POST("/api/pinStatus", func(c *gin.Context) {
+			//if s.getSession(c) {
+			s.pinStatus(c)
+			//} else {
+			//	c.String(403, "403")
+			//}
 		})
-
 	}
 
 	// 模板路由

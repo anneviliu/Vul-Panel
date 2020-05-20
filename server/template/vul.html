@@ -71,7 +71,7 @@
             <h6 class="border-bottom border-gray pb-2 mb-0">最新漏洞</h6>
 
             <div v-html="VulList"></div>
-            <ul class="pagination" style="padding-top: 30px;padding-left: 70px">
+            <ul class="pagination" style="padding-top: 30px;padding-left: 20px">
                 <li class="page-item"><a class="page-link" @click="switchToPage(pageNow-1)" href="#">Previous</a></li>
                 <li class="page-item" v-for="n in pageList" :class="{active:n==pageNow}">
                     <a href="#" @click="switchToPage(n)" class="page-link">{[n]}</a>
@@ -79,7 +79,11 @@
                 <li class="page-item">
                     <a href="#" class="page-link" @click="switchToPage(pageNow+1)">Next</a>
                 </li>
+                <li>
+                    <span style="color: #005cbf;padding-left: 10px;position: relative;top:5px">共 {[this.totalPages]} 页</span>
+                </li>
             </ul>
+
         </div>
     </main>
 </div>
@@ -88,5 +92,5 @@
 <script src="/static/js/axios.min.js"></script>
 <script src="/static/js/jquery.slim.min.js"></script>
 <script>window.jQuery || document.write('<script src="/static/js/jquery.slim.min.js"><\/script>')</script><script src="/static/js/bootstrap.bundle.min.js"></script>
-<script src="/static/js/vulList.js"></script></body>
+<script src="/static/js/m.js"></script></body>
 </html>
