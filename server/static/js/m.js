@@ -11,6 +11,12 @@ new Vue({
             perPage : 20,
             pageNow : 1,
             pageList : [],
+            VulUrl :"",
+            itemStyle:{
+                color : "rgba(255,0,104,0.63)",
+                fontWeight:"bold",
+                textDecoration:"none",
+            }
         }
     },
 
@@ -28,6 +34,7 @@ new Vue({
         async getListByPage(p) {
             return await axios.get('/api/getPages?p='+p)
         },
+
         async getTotalPages() {
             return await axios.get('/api/getPages?t=totalPages')
         },
@@ -35,27 +42,17 @@ new Vue({
         async loadVulList(page) {
             this.VulList = ""
             this.vulData = (await this.getListByPage(page)).data;
-            var color = ""
-            var status = "<a href=\"#\" class=\"badge badge-secondary\">Status</a>"
-
             for (var i in this.vulData) {
-                if (this.vulData[i].Read) {
-                    color = "#0090ff"
+                if (i.Read) {
+                    this.itemStyle.color = "#0090ff"
                 } else {
-                    color = "rgba(255,0,104,0.63)"
+                    this.itemStyle.color = "rgba(255,0,104,0.63)"
                 }
-
-                if (this.vulData[i].VulUrl.length > 70) {
-                    var VulUrl = this.vulData[i].VulUrl.substring(0,70) + "...."
+                if (i.VulUrl.length > 70) {
+                    this.VulUrl = i.VulUrl.substring(0,70) + "...."
                 } else {
-                    VulUrl = this.vulData[i].VulUrl
+                    this.VulUrl = i.VulUrl
                 }
-                this.VulList +=
-                    "                <div class=\"media text-muted pt-3\">" +
-                    "                    <p class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\"> "+ status +
-                    "                        <strong class=\"d-block text-gray-dark\">" + this.vulData[i].CreatedAt + "</strong>" +
-                    "<a style='color: " + color + ";font-weight:bold; text-decoration: none' href="+ this.vulData[i].Url + ">" + this.vulData[i].Host +"</a>" + "<a style='padding-left: 50px'>"+VulUrl + "</a>" + "<p style='color: red;font-size: 12px;'>" +this.vulData[i].Title + "</p>" +
-                    "                </div>"
             }
         },
         

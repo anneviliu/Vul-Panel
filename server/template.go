@@ -50,6 +50,7 @@ func (s *Service) getListByPage(t string, pageNum int, pageSize int, c *gin.Cont
 		Title     string
 		Times     string
 		Read      bool
+		Status    string
 	}
 	var res []RecentList
 	for _, v := range resultSet {
@@ -62,6 +63,7 @@ func (s *Service) getListByPage(t string, pageNum int, pageSize int, c *gin.Cont
 			Url:       "/vulinfo/" + v.TempFilename,
 			Title:     v.VulClass,
 			Read:      v.Read,
+			Status:    v.Status,
 		})
 	}
 	c.JSON(200, res)

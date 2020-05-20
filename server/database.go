@@ -15,6 +15,6 @@ type Vul struct {
 	Times        int64  `gorm:"size:100"`
 	VulClass     string `gorm:"size:100"`
 	TempFilename string `gorm:"size:500"`
-	Read         bool   `gorm:"default:false"` // 是否已读
-	Status       string `gorm:"default:Null"`  // 漏洞是否有效
+	Read         bool   `gorm:"default:false"`  // 是否已读
+	Status       string `gorm:"default:'wait'"` // 漏洞是否有效
 }
