@@ -70,20 +70,40 @@
         <div class="my-3 p-3 bg-white rounded shadow-sm">
             <h6 class="border-bottom border-gray pb-2 mb-0">最新漏洞</h6>
             <div class="media text-muted pt-3" v-for="n in vulData">
-                <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                <p class="media-body pb-3 mb-0 lh-125 border-bottom border-gray">
                     <a href="#" v-if="n.Status==='low'" class="badge badge-info">{[n.Status]}</a>
-                    <a href="#" v-if="n.Status==='middle'" class="badge badge-warning">{[n.Status]}</a>
-                    <a href="#" v-if="n.Status==='high'" class="badge badge-danger">{[n.Status]}</a>
-                    <a href="#" v-else class="badge badge-primary">Wait</a>
-
+                    <a href="#" v-if="n.Status==='middle'" class="badge badge-pill badge-warning">{[n.Status]}</a>
+                    <a href="#" v-if="n.Status==='high'" class="badge badge-pill badge-danger" data-toggle="modal" data-target="#exampleModalCenter">{[n.Status]}</a>
+                    <a href="#" v-else class="badge badge-pill badge-primary">Wait</a>
                     <strong class="d-block text-gray-dark">
                         {[n.CreatedAt]}
                     </strong>
                     <a v-if="n.Read" style="color: #0090ff;font-weight:bold; text-decoration: none" :href="n.Url">{[n.Host]}</a>
                     <a v-else style="color: rgba(255,0,104,0.63);font-weight:bold; text-decoration: none" :href="n.Url">{[n.Host]}</a>
                     <a style='padding-left: 50px'>{[n.VulUrl]}</a>
-                    <p style='color: red;font-size: 12px;'> {[n.Title]}</p>
+                <p style='color: red;font-size: 12px;'> {[n.Title]}</p>
             </div>
+
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            aaa
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <ul class="pagination" style="padding-top: 30px;padding-left: 20px">
                 <li class="page-item"><a class="page-link" @click="switchToPage(pageNow-1)" href="#">Previous</a></li>
                 <li class="page-item" v-for="n in pageList" :class="{active:n==pageNow}">

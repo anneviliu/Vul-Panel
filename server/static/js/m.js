@@ -43,16 +43,17 @@ new Vue({
             this.VulList = ""
             this.vulData = (await this.getListByPage(page)).data;
             for (var i in this.vulData) {
-                if (i.Read) {
-                    this.itemStyle.color = "#0090ff"
-                } else {
-                    this.itemStyle.color = "rgba(255,0,104,0.63)"
-                }
                 if (i.VulUrl.length > 70) {
                     this.VulUrl = i.VulUrl.substring(0,70) + "...."
                 } else {
                     this.VulUrl = i.VulUrl
                 }
+                if (i.Read) {
+                    this.itemStyle.color = "#0090ff"
+                } else {
+                    this.itemStyle.color = "rgba(255,0,104,0.63)"
+                }
+
             }
         },
         
