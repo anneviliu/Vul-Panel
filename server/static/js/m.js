@@ -3,15 +3,15 @@ new Vue({
     delimiters: ["{[", "]}"], // 可自定义符号
     data() {
         return {
-            test: "",
-            VulList: "",
-            vulData: this.vulData,
+            // test: "",
+            // vulList: "",
+            vulData: [],
             totalItems: 0,
             totalPages: 0,
             perPage : 20,
             pageNow : 1,
             pageList : [],
-            VulUrl :"",
+            // vulUrlx :"",
             itemStyle:{
                 color : "rgba(255,0,104,0.63)",
                 fontWeight:"bold",
@@ -40,20 +40,19 @@ new Vue({
         },
 
         async loadVulList(page) {
-            this.VulList = ""
             this.vulData = (await this.getListByPage(page)).data;
             for (var i in this.vulData) {
-                if (i.VulUrl.length > 70) {
-                    this.VulUrl = i.VulUrl.substring(0,70) + "...."
-                } else {
-                    this.VulUrl = i.VulUrl
-                }
-                if (i.Read) {
+                // if (this.vulData[i].VulUrl.length > 70) {
+                //     this.vulUrlx = this.vulData[i].VulUrl.substring(0,70) + "...."
+                // } else {
+                //     this.vulUrlx = this.vulData[i].VulUrl
+                // }
+                // console.log(this.vulUrlx)
+                if (this.vulData[i].Read) {
                     this.itemStyle.color = "#0090ff"
                 } else {
                     this.itemStyle.color = "rgba(255,0,104,0.63)"
                 }
-
             }
         },
         
