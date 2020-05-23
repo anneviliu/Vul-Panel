@@ -78,13 +78,14 @@
                     <strong class="d-block text-gray-dark">
                         {[n.CreatedAt]}
                     </strong>
+
                     <a v-if="n.Read" style="color: #0090ff;font-weight:bold; text-decoration: none" :href="n.Url">{[n.Host]}</a>
                     <a v-else style="color: rgba(255,0,104,0.63);font-weight:bold; text-decoration: none" :href="n.Url">{[n.Host]}</a>
                     <a style='padding-left: 50px' v-if="n.VulUrl.length > 70">{[n.VulUrl.substring(0,70)]} ......</a>
                     <a style='padding-left: 50px' v-else>{[n.VulUrl]}</a>
 
-
                 <p style='color: red;font-size: 12px;'> {[n.Title]}</p>
+                <button type="button" class="btn btn-sm btn-outline-danger" style="margin-left: 20px;">Delete</button>
             </div>
 
             <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
