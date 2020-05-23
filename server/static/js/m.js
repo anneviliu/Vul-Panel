@@ -41,19 +41,6 @@ new Vue({
 
         async loadVulList(page) {
             this.vulData = (await this.getListByPage(page)).data;
-            for (var i in this.vulData) {
-                // if (this.vulData[i].VulUrl.length > 70) {
-                //     this.vulUrlx = this.vulData[i].VulUrl.substring(0,70) + "...."
-                // } else {
-                //     this.vulUrlx = this.vulData[i].VulUrl
-                // }
-                // console.log(this.vulUrlx)
-                if (this.vulData[i].Read) {
-                    this.itemStyle.color = "#0090ff"
-                } else {
-                    this.itemStyle.color = "rgba(255,0,104,0.63)"
-                }
-            }
         },
         
         switchToPage: function (pageNo) {
