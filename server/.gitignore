@@ -1,6 +1,6 @@
 server_linux
 .idea/
 server
-server.exe
-server.rar
+*.exe
+*.rar
 server_linux
