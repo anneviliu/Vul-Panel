@@ -130,7 +130,7 @@ func (s *Service) repairJson(contents []byte) string {
 
 func (s *Service) watchFile(path string) {
 	// 连接redis
-	red, err := redis.Dial("tcp", "127.0.0.1:6379")
+	red, err := redis.Dial("tcp", s.Conf.Base.RedisIP)
 	if err != nil {
 		fmt.Println("Connect to redis error", err)
 		return

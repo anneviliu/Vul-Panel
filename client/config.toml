@@ -1,3 +1,4 @@
 [base]
 ServerIP="localhost:8888"
-Debug=true
+RedisIP="127.0.0.1:6379"
+Debug=false
