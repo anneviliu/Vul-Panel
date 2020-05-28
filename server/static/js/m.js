@@ -42,8 +42,22 @@ new Vue({
         async getVulList(page) {
             this.vulData = (await this.getListByPage(page)).data;
         },
+
+        async pinHigh(p) {
+            return await axios.get('/api/getPages?p='+p)
+        },
+
         deleteItem: function (id) {
-            console.log(id)
+            var timestamp = (new Date()).valueOf();
+            let data = {"id":id,"timestamp":timestamp};
+            axios.post('/api/deleteItems',data)
+            location.reload(true)
+        },
+
+        pinStatus: function (id,status) {
+            let data = {"id":id,"status":status}
+            axios.post('/api/pinStatus',data)
+            location.reload(true)
         },
         
         switchToPage: function (pageNo) {
@@ -61,6 +75,7 @@ new Vue({
             this.pageList = [];
             var limit = 20
             var i = 1
+
             this.totalPages = (await this.getTotalPages()).data;
             if (Number(this.pageNow) > this.totalPages) {
                 return false
@@ -68,6 +83,10 @@ new Vue({
 
             if (this.totalPages > limit && Number(this.pageNow) < limit-1) {
                 for(i;i<=limit;i++) {
+                    this.pageList.push(i)
+                }
+            } else {
+                for (i;i<=this.totalPages;i++) {
                     this.pageList.push(i)
                 }
             }
@@ -82,8 +101,5 @@ new Vue({
                 }
             }
         },
-
-
     }
-
 });

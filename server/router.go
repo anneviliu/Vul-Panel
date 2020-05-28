@@ -77,7 +77,13 @@ func (s *Service) initRouter() *gin.Engine {
 			//}
 		})
 
-		r.POST("")
+		r.POST("/api/deleteItems", func(c *gin.Context) {
+			if s.getSession(c) {
+				s.deleteItems(c)
+			} else {
+				c.String(403, "403")
+			}
+		})
 	}
 
 	// 模板路由

@@ -170,7 +170,7 @@ func (s *Service) pinRead(name string) {
 // 标记漏洞是否有效
 func (s *Service) pinStatus(c *gin.Context) {
 	type data struct {
-		Name   string `json:"name"`
+		ID     int    `json:"id"`
 		Status string `json:"status"`
 	}
 	var formData data
@@ -179,16 +179,33 @@ func (s *Service) pinStatus(c *gin.Context) {
 		c.JSON(400, gin.H{"errcode": 400, "description": "Post Data Err"})
 		return
 	}
+	//fmt.Println(formData.Status)
 	if formData.Status == "high" || formData.Status == "low" || formData.Status == "middle" || formData.Status == "invalid" {
 		var info Vul
-		a := s.Mysql.Model(&Vul{}).Where("temp_filename = ?", formData.Name).Find(&info).RowsAffected
+		a := s.Mysql.Model(&Vul{}).Where("id = ?", formData.ID).Find(&info).RowsAffected
 		if a > 0 {
-			s.Mysql.Model(&info).Where("temp_filename = ?", formData.Name).Update("status", formData.Status)
+			s.Mysql.Model(&info).Where("id = ?", formData.ID).Update("status", formData.Status)
 		} else {
 			return
 		}
 	} else {
 		c.JSON(400, gin.H{"errcode": 400, "description": "invalid status"})
 	}
+}
 
+// 删除条目
+func (s *Service) deleteItems(c *gin.Context) {
+	type data struct {
+		ID        int   `json:"id"`
+		Timestamp int64 `json:"timestmap"`
+	}
+
+	var itemData data
+	err := c.BindJSON(&itemData)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(400, gin.H{"errcode": 400, "description": "Post Data Err"})
+		return
+	}
+	s.Mysql.Table("vuls").Delete(itemData)
 }

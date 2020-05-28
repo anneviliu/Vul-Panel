@@ -72,8 +72,8 @@
             <div class="media text-muted pt-3" v-for="n in vulData">
                 <p class="media-body pb-3 mb-0 lh-125 border-bottom border-gray">
                     <a href="#" v-if="n.Status==='low'" class="badge badge-info">{[n.Status]}</a>
-                    <a href="#" v-if="n.Status==='middle'" class="badge badge-pill badge-warning">{[n.Status]}</a>
-                    <a href="#" v-if="n.Status==='high'" class="badge badge-pill badge-danger" data-toggle="modal" data-target="#exampleModalCenter">{[n.Status]}</a>
+                    <a href="#" v-else-if="n.Status==='middle'" class="badge badge-pill badge-warning">{[n.Status]}</a>
+                    <a href="#" v-else-if="n.Status==='high'" class="badge badge-pill badge-danger" data-toggle="modal" data-target="#exampleModalCenter">{[n.Status]}</a>
                     <a href="#" v-else class="badge badge-pill badge-primary">Wait</a>
                     <strong class="d-block text-gray-dark">
                         {[n.CreatedAt]}
@@ -86,12 +86,12 @@
 
                 <p style='color: red;font-size: 12px;'> {[n.Title]}</p>
                 <div class="dropdown">
-                    <button type="button" class="btn btn-sm btn-outline-danger dropdown-toggle" style="margin-left: 20px;" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Delete</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger dropdown-toggle" style="margin-left: 20px;" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">选项</button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">标记高危</a>
-                        <a class="dropdown-item" href="#">标记中危</a>
-                        <a class="dropdown-item" href="#">标记低危</a>
-                        <a class="dropdown-item" @click="deleteItem(1)" href="#">删除本条</a>
+                        <a class="dropdown-item" @click="pinStatus(n.ID,'high')" href="#">标记高危</a>
+                        <a class="dropdown-item" @click="pinStatus(n.ID,'middle')" href="#">标记中危</a>
+                        <a class="dropdown-item" @click="pinStatus(n.ID,'low')" href="#">标记低危</a>
+                        <a class="dropdown-item" @click="deleteItem(n.ID)" href="#">删除本条</a>
                     </div>
                 </div>
             </div>
@@ -135,6 +135,7 @@
 <script src="/static/js/vue.js"></script>
 <script src="/static/js/axios.min.js"></script>
 <script src="/static/js/jquery.slim.min.js"></script>
+<script src="//cdn.bootcss.com/vue-router/2.5.3/vue-router.min.js"></script>
 <script>window.jQuery || document.write('<script src="/static/js/jquery.slim.min.js"><\/script>')</script><script src="/static/js/bootstrap.bundle.min.js"></script>
 <script src="/static/js/m.js"></script></body>
 </html>
