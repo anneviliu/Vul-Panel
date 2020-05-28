@@ -4,9 +4,9 @@ BaseURL="http://xray/"
 Debug=true
 
 [mysql]
-DBHost="localhost:33060"
-DBUsername="root"
-DBPassword="root"
+DBHost="localhost:3306"
+DBUsername="test"
+DBPassword="test"
 DBName="xray"
 
 [wechat]

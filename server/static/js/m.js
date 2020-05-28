@@ -28,7 +28,7 @@ new Vue({
         } else {
            this.pageNow = localStorage.getItem("pageNow")
         }
-        this.loadVulList(this.pageNow)
+        this.getVulList(this.pageNow)
     },
     methods:{
         async getListByPage(p) {
@@ -39,8 +39,11 @@ new Vue({
             return await axios.get('/api/getPages?t=totalPages')
         },
 
-        async loadVulList(page) {
+        async getVulList(page) {
             this.vulData = (await this.getListByPage(page)).data;
+        },
+        deleteItem: function (id) {
+            console.log(id)
         },
         
         switchToPage: function (pageNo) {
@@ -78,7 +81,9 @@ new Vue({
                     this.pageList.push(j)
                 }
             }
-        }
+        },
+
+
     }
 
 });

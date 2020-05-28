@@ -76,6 +76,8 @@ func (s *Service) initRouter() *gin.Engine {
 			//	c.String(403, "403")
 			//}
 		})
+
+		r.POST("")
 	}
 
 	// 模板路由

@@ -85,7 +85,15 @@
                     <a style='padding-left: 50px' v-else>{[n.VulUrl]}</a>
 
                 <p style='color: red;font-size: 12px;'> {[n.Title]}</p>
-                <button type="button" class="btn btn-sm btn-outline-danger" style="margin-left: 20px;">Delete</button>
+                <div class="dropdown">
+                    <button type="button" class="btn btn-sm btn-outline-danger dropdown-toggle" style="margin-left: 20px;" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Delete</button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="#">标记高危</a>
+                        <a class="dropdown-item" href="#">标记中危</a>
+                        <a class="dropdown-item" href="#">标记低危</a>
+                        <a class="dropdown-item" @click="deleteItem(1)" href="#">删除本条</a>
+                    </div>
+                </div>
             </div>
 
             <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
