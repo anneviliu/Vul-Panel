@@ -84,6 +84,12 @@ func (s *Service) initRouter() *gin.Engine {
 				c.String(403, "403")
 			}
 		})
+
+		r.POST("/api/webhook", func(c *gin.Context) {
+			//vulData := c.PostForm("data")
+			s.getVulInfoFromScanner(c)
+
+		})
 	}
 
 	// 模板路由

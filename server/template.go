@@ -10,11 +10,10 @@ import (
 )
 
 func (s *Service) genFilename(data VulInfo) {
-	// 生成漏洞详情html文件名
 	hostSlice := strings.Split(data.Detail.Host, ".")
 	md5s := []byte(data.Detail.Url + data.Detail.Payload + time.Now().String())
 	has := md5.Sum(md5s)
-	ext := fmt.Sprintf("%x", has) //将[]byte转成16进制
+	ext := fmt.Sprintf("%x", has)
 	s.Conf.TempFileName = hostSlice[len(hostSlice)-2] + "-" + ext
 }
 
@@ -26,8 +25,8 @@ func (s *Service) getTotalItems(c *gin.Context) {
 	c.JSON(200, gin.H{"code": 200, "msg": total})
 }
 
+// 分页
 func (s *Service) getListByPage(t string, pageNum int, pageSize int, c *gin.Context) {
-
 	resultSet := make([]*Vul, 0, 30)
 	handler := s.Mysql.Model(&Vul{}).Order("created_at desc")
 	//pageNumint, _ := strconv.Atoi(pageNum)
