@@ -9,7 +9,7 @@ type Vul struct {
 	Port         int
 	Url          string `gorm:"size:1000"`
 	Title        string
-	Details      string `sql:"TYPE:json"`
+	Details      string `gorm:"size:1000"`
 	Payload      string `gorm:"size:999999"`
 	Request      string `gorm:"size:999999"`
 	Response     string `gorm:"size:999999"`

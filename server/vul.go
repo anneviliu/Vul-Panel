@@ -16,6 +16,7 @@ type VulInfo struct {
 }
 
 type Detail struct {
+	Details   string
 	FileName  string `json:"filename"`
 	Url       string `json:"url"`
 	Host      string `json:"host"`
@@ -35,11 +36,11 @@ func (s *Service) getVulInfo(c *gin.Context) {
 		c.JSON(400, gin.H{"errcode": 400, "description": "Post Data Err"})
 		return
 	}
-	s.add(formData, c)
+	s.add(formData)
 }
 
 // 向数据库中插入漏洞信息
-func (s *Service) add(data VulInfo, c *gin.Context) {
+func (s *Service) add(data VulInfo) {
 	if data.Detail.Request == "" {
 		data.Detail.Request = data.Detail.Request1
 	}
@@ -65,8 +66,8 @@ func (s *Service) add(data VulInfo, c *gin.Context) {
 				Url:          data.Detail.Url,
 				Title:        data.Plugin,
 				Payload:      data.Detail.Payload,
-				Request:      html.EscapeString(data.Detail.Request),
-				Response:     html.EscapeString(data.Detail.Response),
+				Request:      data.Detail.Request,
+				Response:     data.Detail.Response,
 				Times:        data.Timestamp,
 				VulClass:     data.VulClass,
 				TempFilename: s.Conf.TempFileName,

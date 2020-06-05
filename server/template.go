@@ -10,11 +10,21 @@ import (
 )
 
 func (s *Service) genFilename(data VulInfo) {
-	hostSlice := strings.Split(data.Detail.Host, ".")
-	md5s := []byte(data.Detail.Url + data.Detail.Payload + time.Now().String())
-	has := md5.Sum(md5s)
-	ext := fmt.Sprintf("%x", has)
-	s.Conf.TempFileName = hostSlice[len(hostSlice)-2] + "-" + ext
+	if data.Detail.Host != "" {
+		hostSlice := strings.Split(data.Detail.Host, ".")
+		md5s := []byte(data.Detail.Url + data.Detail.Payload + time.Now().String())
+		has := md5.Sum(md5s)
+		ext := fmt.Sprintf("%x", has)
+		s.Conf.TempFileName = hostSlice[len(hostSlice)-2] + "-" + ext
+	}
+	//else if data.Detail.Url != "" {
+	//	hostSlice := strings.Split(data.Detail.Host, ".")
+	//	md5s := []byte(data.Detail.Url + data.Detail.Payload + time.Now().String())
+	//	has := md5.Sum(md5s)
+	//	ext := fmt.Sprintf("%x", has)
+	//	s.Conf.TempFileName = hostSlice[len(hostSlice)-2] + "-" + ext
+	//}
+
 }
 
 // 返回漏洞条目总数

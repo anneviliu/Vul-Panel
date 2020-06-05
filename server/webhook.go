@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
 	"github.com/gin-gonic/gin"
+	"net/url"
+	"time"
 )
 
 /*
@@ -14,33 +16,66 @@ type info struct {
 }
 
 func (s *Service) getVulInfoFromScanner(c *gin.Context) {
+	var request, resp, urlV, typeV, detail string
+
 	buf := make([]byte, 40960)
 	n, _ := c.Request.Body.Read(buf)
 
 	js, err := simplejson.NewJson(buf[0:n])
+
 	if err != nil {
 		fmt.Println("JSON 格式解析错误", err)
 		return
 	}
-	detail, _ := js.Get("Details").Map()
-	fmt.Println(detail)
-	for k, v := range detail {
-		fmt.Println(k, " ", v)
-	}
-	//request, err := js.Get("RawRequest").String()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//fmt.Println(request)
-	//
-	//resp, err := js.Get("RawResponse").String()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//fmt.Println(resp)
 
-	//s.add()
-	//fmt.Println(detail.Get("Param").String())
+	detail, _ = js.Get("Details").String()
+	// 判断各个json字段是否存在
+	if _, flag := js.CheckGet("RawRequest"); flag {
+		request, _ = js.Get("RawRequest").String()
+	} else {
+		request = ""
+	}
+
+	if _, flag := js.CheckGet("RawResponse"); flag {
+		resp, _ = js.Get("RawResponse").String()
+	} else {
+		resp = ""
+	}
+
+	if _, flag := js.CheckGet("Type"); flag {
+		typeV, _ = js.Get("Type").String()
+	} else {
+		typeV = ""
+	}
+
+	if _, flag := js.CheckGet("Url"); flag {
+		urlV, _ = js.Get("Url").String()
+	} else {
+		urlV = ""
+	}
+
+	u, err := url.Parse(urlV)
+
+	if err != nil {
+		fmt.Println("URL解析失败")
+		return
+	}
+	fmt.Println(u.Host)
+
+	s.add(VulInfo{
+		Timestamp: time.Now().UnixNano() / 1e6,
+		Detail: Detail{
+			Details:   detail,
+			Url:       urlV,
+			Host:      u.Host,
+			Payload:   "",
+			Port:      0,
+			Request:   request,
+			Response:  resp,
+			Request1:  "",
+			Response1: "",
+		},
+		Plugin:   "",
+		VulClass: typeV,
+	})
 }
