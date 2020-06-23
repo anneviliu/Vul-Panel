@@ -23,10 +23,10 @@ new Vue({
     mounted() {
         this.pageList = [];
         this.loadPageList()
-        if (localStorage.getItem("pageNow") == null) {
+        if (sessionStorage.getItem("pageNow") == null) {
             this.pageNow = 0
         } else {
-           this.pageNow = localStorage.getItem("pageNow")
+           this.pageNow = sessionStorage.getItem("pageNow")
         }
         this.getVulList(this.pageNow)
     },
@@ -64,10 +64,10 @@ new Vue({
             if (pageNo <= 0 || pageNo > this.totalPages+1){
                 return false;
             }
-            localStorage.setItem("pageNow",pageNo)
+            sessionStorage.setItem("pageNow",pageNo)
             this.pageNow = pageNo
 
-            this.loadVulList(pageNo)
+            this.getVulList(pageNo)
             this.loadPageList()
         },
 

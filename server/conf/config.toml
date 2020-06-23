@@ -7,7 +7,7 @@ Debug=true
 DBHost="localhost:33060"
 DBUsername="root"
 DBPassword="root"
-DBName="Xray"
+DBName="xray"
 
 [wechat]
 CorpID=""
