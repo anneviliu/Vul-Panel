@@ -1,17 +1,14 @@
 new Vue({
     el: '#app',
-    delimiters: ["{[", "]}"], // 可自定义符号
+    delimiters: ["{[", "]}"],
     data() {
         return {
-            // test: "",
-            // vulList: "",
             vulData: [],
             totalItems: 0,
             totalPages: 0,
             perPage : 20,
             pageNow : 1,
             pageList : [],
-            // vulUrlx :"",
             itemStyle:{
                 color : "rgba(255,0,104,0.63)",
                 fontWeight:"bold",
