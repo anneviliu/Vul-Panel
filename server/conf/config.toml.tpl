@@ -1,13 +1,6 @@
 [base]
 Port=":8888"
-BaseURL="http://xray/"
 Debug=true
-
-[mysql]
-DBHost="localhost:33060"
-DBUsername="root"
-DBPassword="root"
-DBName="xray"
 
 [wechat]
 CorpID=""

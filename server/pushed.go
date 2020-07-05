@@ -30,13 +30,13 @@ func (s *Service) addPushed(data VulInfo) {
 		Response: html.EscapeString(data.Detail.Response),
 		Times:    data.Timestamp,
 	}
-	s.Mysql.Create(&pushed)
+	s.Db.Create(&pushed)
 }
 
 // 获取最后插入记录的时间戳
 func (s *Service) getLastTime(c *gin.Context) {
 	var time Pushed
-	err := s.Mysql.Where(&Pushed{}).Last(&time).Error
+	err := s.Db.Where(&Pushed{}).Last(&time).Error
 	if err != nil {
 		c.JSON(200, gin.H{"code": 500, "msg": "数据库错误"})
 		return

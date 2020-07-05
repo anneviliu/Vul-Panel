@@ -30,7 +30,7 @@ func (s *Service) genFilename(data VulInfo) {
 // 返回漏洞条目总数
 func (s *Service) getTotalItems(c *gin.Context) {
 	var total int
-	s.Mysql.Table("vuls").Count(&total)
+	s.Db.Table("vuls").Count(&total)
 	//fmt.Println(total)
 	c.JSON(200, gin.H{"code": 200, "msg": total})
 }
@@ -38,7 +38,7 @@ func (s *Service) getTotalItems(c *gin.Context) {
 // 分页
 func (s *Service) getListByPage(t string, pageNum int, pageSize int, c *gin.Context) {
 	resultSet := make([]*Vul, 0, 30)
-	handler := s.Mysql.Model(&Vul{}).Order("created_at desc")
+	handler := s.Db.Model(&Vul{}).Order("created_at desc")
 	//pageNumint, _ := strconv.Atoi(pageNum)
 	//fmt.Println(pageNum)
 	r, err := pageable.PageQuery(pageNum, pageSize, handler, &resultSet)

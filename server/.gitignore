@@ -1,6 +1,8 @@
 server_linux
 .idea/
+database.db
 server
+**/config.toml
 *.exe
 *.rar
 server_linux

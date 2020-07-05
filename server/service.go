@@ -8,12 +8,12 @@ import (
 type Service struct {
 	Conf   *Config
 	Router *gin.Engine
-	Mysql  *gorm.DB
+	Db     *gorm.DB
 }
 
 func (s *Service) init() {
 	s.initConfig()
-	s.initMysql()
+	s.initDb()
 	s.Router = s.initRouter()
 	panic(s.Router.Run(s.Conf.Base.Port))
 }

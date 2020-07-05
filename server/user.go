@@ -36,7 +36,7 @@ func (s *Service) register(c *gin.Context) {
 		return
 	}
 
-	a := s.Mysql.Where("username = ? or email=?", UserData.Username, UserData.Email).Find(&UserData).RowsAffected
+	a := s.Db.Where("username = ? or email=?", UserData.Username, UserData.Email).Find(&UserData).RowsAffected
 	if a != 0 {
 		c.JSON(200, gin.H{"errcode": 400, "msg": "用户名或邮箱已存在"})
 		return
@@ -48,7 +48,7 @@ func (s *Service) register(c *gin.Context) {
 		Password: UserData.Password,
 		Email:    UserData.Email,
 	}
-	s.Mysql.Create(&userdata)
+	s.Db.Create(&userdata)
 	c.JSON(200, gin.H{"errcode": 0, "msg": "注册成功"})
 }
 
@@ -60,7 +60,7 @@ func (s *Service) login(c *gin.Context) {
 		return
 	}
 
-	a := s.Mysql.Where("email = ? AND password=?", loginData.Email, loginData.Password).Find(&loginData).RowsAffected
+	a := s.Db.Where("email = ? AND password=?", loginData.Email, loginData.Password).Find(&loginData).RowsAffected
 	if a > 0 {
 		session := sessions.Default(c)
 		session.Set("mail", loginData.Email)
@@ -87,7 +87,7 @@ func (s *Service) getNameByEmail(c *gin.Context) string {
 	var loginData RegUser
 	session := sessions.Default(c)
 	mail := session.Get("mail")
-	err := s.Mysql.Where("email = ?", mail).Find(&loginData).Error
+	err := s.Db.Where("email = ?", mail).Find(&loginData).Error
 	if err != nil {
 		fmt.Println(err)
 	}

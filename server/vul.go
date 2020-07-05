@@ -72,7 +72,7 @@ func (s *Service) add(data VulInfo) {
 				VulClass:     data.VulClass,
 				TempFilename: s.Conf.TempFileName,
 			}
-			s.Mysql.Create(vulData)
+			s.Db.Create(vulData)
 		} else {
 			s.genFilename(data)
 			s.StartWeChat(data)
@@ -88,7 +88,7 @@ func (s *Service) add(data VulInfo) {
 				VulClass:     data.VulClass,
 				TempFilename: s.Conf.TempFileName,
 			}
-			s.Mysql.Create(vulData)
+			s.Db.Create(vulData)
 		}
 	}
 }
@@ -96,7 +96,7 @@ func (s *Service) add(data VulInfo) {
 // 检查该漏洞是否已记录
 // TODO：使用hash的方式对比除了timestamp 以外的字段，以减少漏洞重复率
 func (s *Service) check(data VulInfo) bool {
-	a := s.Mysql.Model(&Pushed{}).Where(&Pushed{
+	a := s.Db.Model(&Pushed{}).Where(&Pushed{
 		Model: gorm.Model{},
 		/*
 		 *  修复 不得根据request和resp来判断
@@ -120,7 +120,7 @@ func (s *Service) check(data VulInfo) bool {
 // 返回漏洞列表数据
 func (s *Service) getVulList(c *gin.Context) {
 	var vulList []Vul
-	s.Mysql.Order("created_at desc").Find(&vulList)
+	s.Db.Order("created_at desc").Find(&vulList)
 	type RecentList struct {
 		ID        uint
 		Host      string
@@ -149,7 +149,7 @@ func (s *Service) getVulList(c *gin.Context) {
 
 func (s *Service) getVulByName(name string) (Vul, bool) {
 	var data Vul
-	a := s.Mysql.Model(&Vul{}).Where("temp_filename = ?", name).Find(&data).RowsAffected
+	a := s.Db.Model(&Vul{}).Where("temp_filename = ?", name).Find(&data).RowsAffected
 	if a > 0 {
 		return data, true
 	} else {
@@ -160,9 +160,9 @@ func (s *Service) getVulByName(name string) (Vul, bool) {
 // 标记已读
 func (s *Service) pinRead(name string) {
 	var info Vul
-	a := s.Mysql.Model(&Vul{}).Where("temp_filename = ?", name).Find(&info).RowsAffected
+	a := s.Db.Model(&Vul{}).Where("temp_filename = ?", name).Find(&info).RowsAffected
 	if a > 0 {
-		s.Mysql.Model(&info).Where("temp_filename = ?", name).Update("read", true)
+		s.Db.Model(&info).Where("temp_filename = ?", name).Update("read", true)
 	} else {
 		return
 	}
@@ -183,9 +183,9 @@ func (s *Service) pinStatus(c *gin.Context) {
 	//fmt.Println(formData.Status)
 	if formData.Status == "high" || formData.Status == "low" || formData.Status == "middle" || formData.Status == "invalid" {
 		var info Vul
-		a := s.Mysql.Model(&Vul{}).Where("id = ?", formData.ID).Find(&info).RowsAffected
+		a := s.Db.Model(&Vul{}).Where("id = ?", formData.ID).Find(&info).RowsAffected
 		if a > 0 {
-			s.Mysql.Model(&info).Where("id = ?", formData.ID).Update("status", formData.Status)
+			s.Db.Model(&info).Where("id = ?", formData.ID).Update("status", formData.Status)
 		} else {
 			return
 		}
@@ -208,5 +208,5 @@ func (s *Service) deleteItems(c *gin.Context) {
 		c.JSON(400, gin.H{"errcode": 400, "description": "Post Data Err"})
 		return
 	}
-	s.Mysql.Table("vuls").Delete(itemData)
+	s.Db.Table("vuls").Delete(itemData)
 }
