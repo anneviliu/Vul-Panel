@@ -70,11 +70,11 @@ func (s *Service) initRouter() *gin.Engine {
 		})
 
 		r.POST("/api/pinStatus", func(c *gin.Context) {
-			//if s.getSession(c) {
+			if s.getSession(c) {
 			s.pinStatus(c)
-			//} else {
-			//	c.String(403, "403")
-			//}
+			} else {
+				c.String(403, "403")
+			}
 		})
 
 		r.POST("/api/deleteItems", func(c *gin.Context) {
