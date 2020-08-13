@@ -32,6 +32,7 @@ func (s *Service) register(c *gin.Context) {
 	}
 
 	if UserData.InviteCode != s.Conf.Admin.InviteCode {
+		fmt.Println(s.Conf.Admin.InviteCode)
 		c.JSON(200, gin.H{"errcode": 400, "msg": "邀请码错误"})
 		return
 	}

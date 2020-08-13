@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"html"
 )
 
 // 客户端返回数据json结构体
@@ -82,8 +81,8 @@ func (s *Service) add(data VulInfo) {
 				Url:          data.Detail.Url,
 				Title:        data.Plugin,
 				Payload:      data.Detail.Payload,
-				Request:      html.EscapeString(data.Detail.Request),
-				Response:     html.EscapeString(data.Detail.Response),
+				Request:      data.Detail.Request,
+				Response:     data.Detail.Response,
 				Times:        data.Timestamp,
 				VulClass:     data.VulClass,
 				TempFilename: s.Conf.TempFileName,
