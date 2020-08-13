@@ -28,28 +28,28 @@ func (s *Service) getVulInfoFromScanner(c *gin.Context) {
 		return
 	}
 
-	detail, _ = js.Get("Details").String()
+	detail, _ = js.Get("details").String()
 	// 判断各个json字段是否存在
-	if _, flag := js.CheckGet("RawRequest"); flag {
-		request, _ = js.Get("RawRequest").String()
+	if _, flag := js.CheckGet("rawrequest"); flag {
+		request, _ = js.Get("rawrequest").String()
 	} else {
 		request = ""
 	}
 
-	if _, flag := js.CheckGet("RawResponse"); flag {
-		resp, _ = js.Get("RawResponse").String()
+	if _, flag := js.CheckGet("rawresponse"); flag {
+		resp, _ = js.Get("rawresponse").String()
 	} else {
 		resp = ""
 	}
 
-	if _, flag := js.CheckGet("Type"); flag {
-		typeV, _ = js.Get("Type").String()
+	if _, flag := js.CheckGet("type"); flag {
+		typeV, _ = js.Get("type").String()
 	} else {
 		typeV = ""
 	}
 
-	if _, flag := js.CheckGet("Url"); flag {
-		urlV, _ = js.Get("Url").String()
+	if _, flag := js.CheckGet("url"); flag {
+		urlV, _ = js.Get("url").String()
 	} else {
 		urlV = ""
 	}
