@@ -31,7 +31,6 @@ func (s *Service) genFilename(data VulInfo) {
 func (s *Service) getTotalItems(c *gin.Context) {
 	var total int
 	s.Db.Table("vuls").Count(&total)
-	//fmt.Println(total)
 	c.JSON(200, gin.H{"code": 200, "msg": total})
 }
 

@@ -1,6 +1,7 @@
 server_linux
 .idea/
 database.db
+database_1.db
 server
 **/config.toml
 *.exe

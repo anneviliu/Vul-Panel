@@ -17,4 +17,7 @@ func (s *Service) initDb() {
 
 	s.Db = db
 	s.Db.AutoMigrate(&Vul{}, &Pushed{}, &RegUser{})
+	s.Db.Model(&Vul{}).AddIndex("idx_name","temp_filename")
+	s.Db.Model(&Vul{}).AddIndex("idx_name","created_at")
+	s.Db.Model(&Vul{}).AddIndex("idx_name","id")
 }
